@@ -1,33 +1,35 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Proje Brief Üretici</title>
+<title>Project Brief Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0c0c0f;
-    --bg2: #131318;
-    --bg3: #1a1a22;
-    --bg4: #22222d;
-    --border: rgba(255,255,255,0.07);
-    --border-hover: rgba(255,255,255,0.15);
-    --accent: #7c6dfa;
-    --accent2: #a78bfa;
-    --accent-dim: rgba(124,109,250,0.12);
-    --accent-glow: rgba(124,109,250,0.25);
-    --text: #e8e8f0;
-    --text2: #9090a8;
-    --text3: #5a5a72;
-    --green: #34d399;
-    --amber: #fbbf24;
-    --red: #f87171;
-    --mono: 'DM Mono', monospace;
-    --sans: 'Syne', sans-serif;
-    --radius: 10px;
-    --section-gap: 2px;
+    /* Solarized Light base */
+    --bg:   #fdf6e3;
+    --bg2:  #eee8d5;
+    --bg3:  #e8e0cc;
+    --bg4:  #ddd6c0;
+    --border: #839496;
+    --border-hover: #657b83;
+    --accent:  #d33682;
+    --accent2: #cb4b16;
+    --accent-dim: rgba(211,54,130,0.10);
+    --accent-glow: rgba(211,54,130,0.20);
+    --text:  #073642;
+    --text2: #586e75;
+    --text3: #93a1a1;
+    --green:  #2aa198;
+    --amber:  #b58900;
+    --red:    #dc322f;
+    --blue:   #268bd2;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Outfit', sans-serif;
+    --radius: 6px;
+    --section-gap: 3px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,18 +45,17 @@
   /* ── HEADER ── */
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(12,12,15,0.92);
+    background: rgba(253,246,227,0.95);
     backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--accent);
     padding: 0 24px;
     display: flex; align-items: center; justify-content: space-between;
     height: 56px;
   }
-  .logo { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent2); text-transform: uppercase; }
+  .logo { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
   .progress-bar-wrap { flex: 1; max-width: 280px; margin: 0 24px; }
   .progress-track { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
-  .progress-label { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }  .progress-label { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
 
   /* ── LAYOUT ── */
   .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 120px; }
@@ -62,7 +63,7 @@
   /* ── HERO ── */
   .hero { margin-bottom: 48px; }
   .hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
-  .hero h1 span { color: var(--accent2); }
+  .hero h1 span { color: var(--accent); }
   .hero p { color: var(--text2); font-family: var(--mono); font-size: 13px; margin-top: 12px; }
 
   /* ── SECTIONS ── */
@@ -74,7 +75,7 @@
     transition: border-color 0.2s;
   }
   .section.active { border-color: var(--accent); }
-  .section.filled { border-color: rgba(52,211,153,0.3); }
+  .section.filled { border-color: rgba(42,161,152,0.5); }
 
   .section-header {
     display: flex; align-items: center; gap: 12px;
@@ -93,8 +94,8 @@
     font-family: var(--mono); font-size: 11px; color: var(--text3);
     flex-shrink: 0; transition: all 0.2s;
   }
-  .section.active .section-num { background: var(--accent-dim); border-color: var(--accent); color: var(--accent2); }
-  .section.filled .section-num { background: rgba(52,211,153,0.15); border-color: var(--green); color: var(--green); }
+  .section.active .section-num { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .section.filled .section-num { background: rgba(42,161,152,0.15); border-color: var(--green); color: var(--green); }
 
   .section-title { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; flex: 1; }
   .section-status { font-family: var(--mono); font-size: 10px; color: var(--text3); }
@@ -154,7 +155,7 @@
     background: var(--bg3);
   }
   .chip:hover { border-color: var(--border-hover); color: var(--text); }
-  .chip.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent2); }
+  .chip.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 700; }
 
   /* ── FEATURE LISTS ── */
   .feature-list { display: flex; flex-direction: column; gap: 8px; }
@@ -202,20 +203,20 @@
   .generate-inner {
     max-width: 780px; margin: 0 auto;
     padding: 16px 24px;
-    background: rgba(12,12,15,0.95);
+    background: rgba(253,246,227,0.97);
     backdrop-filter: blur(16px);
-    border-top: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
     display: flex; gap: 12px; align-items: center;
   }
   .btn-generate {
     flex: 1;
-    background: linear-gradient(135deg, var(--accent), #9f7aea);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
     border: none; border-radius: 8px;
     color: #fff; font-family: var(--sans); font-size: 14px; font-weight: 700;
     padding: 14px 24px; cursor: pointer;
     letter-spacing: 0.04em;
     transition: opacity 0.15s, transform 0.1s;
-    box-shadow: 0 4px 20px var(--accent-glow);
+    box-shadow: 2px 2px 4px rgba(7,54,66,0.15);
   }
   .btn-generate:hover { opacity: 0.9; }
   .btn-generate:active { transform: scale(0.98); }
@@ -232,15 +233,15 @@
   #output-section {
     display: none;
     margin-top: 32px;
-    border: 1px solid rgba(52,211,153,0.3);
+    border: 1px solid rgba(42,161,152,0.4);
     border-radius: var(--radius);
     overflow: hidden;
   }
   .output-header {
-    background: rgba(52,211,153,0.08);
+    background: rgba(42,161,152,0.1);
     padding: 14px 20px;
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid rgba(52,211,153,0.2);
+    border-bottom: 1px solid rgba(42,161,152,0.3);
   }
   .output-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; }
   .output-actions { display: flex; gap: 8px; }
@@ -253,10 +254,10 @@
   }
   .btn-sm:hover { border-color: var(--border-hover); color: var(--text); }
   #md-output {
-    background: var(--bg2);
+    background: #073642;
     padding: 24px;
     font-family: var(--mono); font-size: 12px;
-    line-height: 1.7; color: var(--text2);
+    line-height: 1.7; color: #93a1a1;
     white-space: pre-wrap; word-break: break-word;
     max-height: 500px; overflow-y: auto;
   }
@@ -265,100 +266,100 @@
 <body>
 
 <header>
-  <div class="logo">⬡ Brief Üretici</div>
+  <div class="logo">⬡ Brief Generator</div>
   <div class="progress-bar-wrap">
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel">0 / 10 bölüm dolduruldu</div>
+    <div class="progress-label" id="progressLabel">0 / 10 sections filled</div>
   </div>
 </header>
 
 <div class="container">
 
   <div class="hero">
-    <h1>Proje Brief<br><span>Üretici</span></h1>
-    <p>// Doldur → Dosyayı Üret → Claude'a yapıştır</p>
+    <h1>Project Brief<br><span>Generator</span></h1>
+    <p>// Fill → Generate File → Paste into Claude</p>
   </div>
 
-  <!-- ─── SECTION 1: Proje Kimliği ─── -->
+  <!-- ─── SECTION 1: Project Identity ─── -->
   <div class="section active open" id="s1">
     <div class="section-header" onclick="toggleSection('s1')">
       <div class="section-num">01</div>
-      <div class="section-title">Proje Kimliği</div>
-      <div class="section-status" id="s1-status">boş</div>
+      <div class="section-title">Project Identity</div>
+      <div class="section-status" id="s1-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>Proje adı</label>
-        <input type="text" id="projectName" placeholder="örn: ResumeAI, InvoicePilot, LinkDrop…" oninput="updateProgress()">
+        <label>Project name</label>
+        <input type="text" id="projectName" placeholder="e.g. ResumeAI, InvoicePilot, LinkDrop…" oninput="updateProgress()">
       </div>
       <div class="field">
-        <label>Kategori</label>
+        <label>Category</label>
         <div class="chips" id="categoryChips">
           <div class="chip" onclick="selectChip(this,'categoryChips')">SaaS</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">Araç / Utility</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">API Servisi</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">İçerik Platformu</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">Tool / Utility</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">API Service</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">Content Platform</div>
           <div class="chip" onclick="selectChip(this,'categoryChips')">Marketplace</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">Chrome Eklentisi</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">Chrome Extension</div>
         </div>
       </div>
       <div class="field">
-        <label>Tek cümle özet <span class="hint">// [Kime] için [ne yapan] bir [ne]</span></label>
-        <input type="text" id="summary" placeholder="örn: Freelancer'lar için otomatik fatura oluşturan web uygulaması" oninput="updateProgress()">
+        <label>One-line summary <span class="hint">// [For whom] that [does what] — one sentence</span></label>
+        <input type="text" id="summary" placeholder="e.g. A web app that auto-generates invoices for freelancers in 30 seconds" oninput="updateProgress()">
       </div>
       <div class="field">
-        <label>Gelir modeli</label>
+        <label>Revenue model</label>
         <div class="chips" id="revenueChips">
           <div class="chip" onclick="selectChip(this,'revenueChips')">Freemium</div>
-          <div class="chip" onclick="selectChip(this,'revenueChips')">One-time satış</div>
+          <div class="chip" onclick="selectChip(this,'revenueChips')">One-time purchase</div>
           <div class="chip" onclick="selectChip(this,'revenueChips')">Subscription</div>
           <div class="chip" onclick="selectChip(this,'revenueChips')">Usage-based</div>
-          <div class="chip" onclick="selectChip(this,'revenueChips')">Reklam</div>
+          <div class="chip" onclick="selectChip(this,'revenueChips')">Advertising</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 2: Problem & Çözüm ─── -->
+  <!-- ─── SECTION 2: Problem & Solution ─── -->
   <div class="section" id="s2">
     <div class="section-header" onclick="toggleSection('s2')">
       <div class="section-num">02</div>
-      <div class="section-title">Problem ve Çözüm</div>
-      <div class="section-status" id="s2-status">boş</div>
+      <div class="section-title">Problem & Solution</div>
+      <div class="section-status" id="s2-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>Kimin problemi? <span class="hint">// Mümkün olduğunca spesifik — "herkes" değil</span></label>
-        <textarea id="targetUser" placeholder="örn: Müşteri faturası kesen ama muhasebe yazılımı çok pahalı gelen solo freelancer'lar" oninput="updateProgress()"></textarea>
+        <label>Whose problem? <span class="hint">// Be specific — not "everyone"</span></label>
+        <textarea id="targetUser" placeholder="e.g. Solo freelancers who invoice clients but find accounting software too expensive" oninput="updateProgress()"></textarea>
       </div>
       <div class="field">
-        <label>Şu an nasıl çözüyorlar?</label>
-        <textarea id="currentSolution" placeholder="örn: Excel şablonu, Wave, Notion — hepsi ya yavaş ya eksik" oninput="updateProgress()"></textarea>
+        <label>How do they solve it today?</label>
+        <textarea id="currentSolution" placeholder="e.g. Excel templates, Wave, Notion — all either slow or missing key features" oninput="updateProgress()"></textarea>
       </div>
       <div class="field">
-        <label>Senin farkın nedir?</label>
-        <textarea id="differentiation" placeholder="örn: Müşteri portali olmadan PDF + WhatsApp ile gönderim, 30 saniyede fatura" oninput="updateProgress()"></textarea>
+        <label>What is your differentiator?</label>
+        <textarea id="differentiation" placeholder="e.g. PDF + WhatsApp delivery without a client portal — invoice ready in 30 seconds" oninput="updateProgress()"></textarea>
       </div>
       <div class="field">
-        <label>Neden şimdi? <span class="optional">(opsiyonel)</span></label>
-        <input type="text" id="whyNow" placeholder="örn: Vergi sezonu yaklaşıyor / AI ile çok ucuza yapılabilir hale geldi">
+        <label>Why now? <span class="optional">(optional)</span></label>
+        <input type="text" id="whyNow" placeholder="e.g. Tax season approaching / now feasible with AI at near-zero cost">
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 3: MVP Özellikleri ─── -->
+  <!-- ─── SECTION 3: MVP Features ─── -->
   <div class="section" id="s3">
     <div class="section-header" onclick="toggleSection('s3')">
       <div class="section-num">03</div>
-      <div class="section-title">MVP Özellikleri</div>
-      <div class="section-status" id="s3-status">boş</div>
+      <div class="section-title">MVP Features</div>
+      <div class="section-status" id="s3-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label><span style="color:var(--red)">●</span> Mutlaka olmalı — core <span class="hint">// Max 3 feature</span></label>
+        <label><span style="color:var(--red)">●</span> Must Have — core <span class="hint">// Max 3 features</span></label>
         <div class="feature-list" id="coreFeatures">
           <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 1" oninput="updateProgress()"></div>
           <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 2" oninput="updateProgress()"></div>
@@ -367,30 +368,30 @@
       </div>
       <div class="divider"></div>
       <div class="field">
-        <label><span style="color:var(--amber)">●</span> Güzel olsa iyi — v1.1</label>
+        <label><span style="color:var(--amber)">●</span> Nice to Have — v1.1</label>
         <div class="feature-list" id="niceFeatures">
           <div class="feature-row"><div class="feature-dot dot-amber"></div><input type="text" placeholder="Nice-to-have 1"></div>
           <div class="feature-row"><div class="feature-dot dot-amber"></div><input type="text" placeholder="Nice-to-have 2"></div>
         </div>
-        <button class="add-btn" onclick="addFeature('niceFeatures','dot-amber')">+ Ekle</button>
+        <button class="add-btn" onclick="addFeature('niceFeatures','dot-amber')">+ Add</button>
       </div>
       <div class="divider"></div>
       <div class="field">
-        <label><span style="color:var(--text3)">●</span> Backlog — sonraki sürüm</label>
+        <label><span style="color:var(--text3)">●</span> Backlog — next version</label>
         <div class="feature-list" id="backlogFeatures">
           <div class="feature-row"><div class="feature-dot dot-gray"></div><input type="text" placeholder="Backlog 1"></div>
         </div>
-        <button class="add-btn" onclick="addFeature('backlogFeatures','dot-gray')">+ Ekle</button>
+        <button class="add-btn" onclick="addFeature('backlogFeatures','dot-gray')">+ Add</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 4: Teknik Kısıtlar ─── -->
+  <!-- ─── SECTION 4: Technical Preferences ─── -->
   <div class="section" id="s4">
     <div class="section-header" onclick="toggleSection('s4')">
       <div class="section-num">04</div>
-      <div class="section-title">Teknik Tercihler</div>
-      <div class="section-status" id="s4-status">sabit</div>
+      <div class="section-title">Technical Preferences</div>
+      <div class="section-status" id="s4-status">defaults set</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
@@ -400,55 +401,55 @@
           <div class="chip" onclick="selectChip(this,'frameworkChips')">FastAPI</div>
           <div class="chip" onclick="selectChip(this,'frameworkChips')">Django</div>
           <div class="chip" onclick="selectChip(this,'frameworkChips')">Flask</div>
-          <div class="chip selected" onclick="selectChip(this,'frameworkChips')">Claude seçsin</div>
+          <div class="chip selected" onclick="selectChip(this,'frameworkChips')">Let Claude decide</div>
         </div>
       </div>
       <div class="field">
-        <label>Veritabanı</label>
+        <label>Database</label>
         <div class="chips" id="dbChips">
           <div class="chip" onclick="selectChip(this,'dbChips')">PostgreSQL</div>
           <div class="chip" onclick="selectChip(this,'dbChips')">SQLite</div>
           <div class="chip" onclick="selectChip(this,'dbChips')">MongoDB</div>
-          <div class="chip" onclick="selectChip(this,'dbChips')">Redis (sadece)</div>
-          <div class="chip selected" onclick="selectChip(this,'dbChips')">Claude seçsin</div>
+          <div class="chip" onclick="selectChip(this,'dbChips')">Redis only</div>
+          <div class="chip selected" onclick="selectChip(this,'dbChips')">Let Claude decide</div>
         </div>
       </div>
       <div class="field">
-        <label>Frontend yaklaşımı</label>
+        <label>Frontend approach</label>
         <div class="chips" id="feChips">
           <div class="chip selected" onclick="selectChip(this,'feChips')">HTMX + Jinja2</div>
           <div class="chip" onclick="selectChip(this,'feChips')">Alpine.js + Tailwind</div>
           <div class="chip" onclick="selectChip(this,'feChips')">Vanilla JS</div>
-          <div class="chip" onclick="selectChip(this,'feChips')">Claude seçsin</div>
+          <div class="chip" onclick="selectChip(this,'feChips')">Let Claude decide</div>
         </div>
       </div>
       <div class="field">
-        <label>Auth yöntemi</label>
+        <label>Auth method</label>
         <div class="chips" id="authChips">
           <div class="chip" onclick="selectChip(this,'authChips')">JWT</div>
           <div class="chip" onclick="selectChip(this,'authChips')">Session</div>
           <div class="chip" onclick="selectChip(this,'authChips')">OAuth (Google)</div>
           <div class="chip" onclick="selectChip(this,'authChips')">Magic Link</div>
-          <div class="chip selected" onclick="selectChip(this,'authChips')">Claude seçsin</div>
+          <div class="chip selected" onclick="selectChip(this,'authChips')">Let Claude decide</div>
         </div>
       </div>
       <div class="field">
-        <label>Kesinlikle istemediğim <span class="optional">(opsiyonel)</span></label>
-        <input type="text" id="techDontWant" placeholder="örn: TypeScript, Kubernetes, PHP">
+        <label>Do NOT use <span class="optional">(optional)</span></label>
+        <input type="text" id="techDontWant" placeholder="e.g. TypeScript, Kubernetes, PHP">
       </div>
       <div class="field">
-        <label>Ek kütüphane / araç tercihleri <span class="optional">(opsiyonel)</span></label>
-        <input type="text" id="techExtras" placeholder="örn: Celery + Redis iş kuyruğu istiyorum, Stripe kesin olsun">
+        <label>Extra library / tool preferences <span class="optional">(optional)</span></label>
+        <input type="text" id="techExtras" placeholder="e.g. Celery + Redis task queue, must use Stripe">
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 5: Sıfır Maliyet Altyapısı ─── -->
+  <!-- ─── SECTION 5: Zero-Cost Infrastructure ─── -->
   <div class="section" id="s5">
     <div class="section-header" onclick="toggleSection('s5')">
       <div class="section-num">05</div>
-      <div class="section-title">Sıfır Maliyet Altyapısı</div>
-      <div class="section-status" id="s5-status">boş</div>
+      <div class="section-title">Zero-Cost Infrastructure</div>
+      <div class="section-status" id="s5-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
@@ -458,7 +459,7 @@
           <div class="chip" onclick="selectChip(this,'backendChips')">Railway</div>
           <div class="chip" onclick="selectChip(this,'backendChips')">Render</div>
           <div class="chip" onclick="selectChip(this,'backendChips')">Fly.io</div>
-          <div class="chip selected" onclick="selectChip(this,'backendChips')">Claude seçsin</div>
+          <div class="chip selected" onclick="selectChip(this,'backendChips')">Let Claude decide</div>
         </div>
 
         <div class="infra-key">Frontend hosting</div>
@@ -466,15 +467,15 @@
           <div class="chip" onclick="selectChip(this,'frontendHostChips')">Vercel</div>
           <div class="chip" onclick="selectChip(this,'frontendHostChips')">Netlify</div>
           <div class="chip" onclick="selectChip(this,'frontendHostChips')">Cloudflare Pages</div>
-          <div class="chip selected" onclick="selectChip(this,'frontendHostChips')">Claude seçsin</div>
+          <div class="chip selected" onclick="selectChip(this,'frontendHostChips')">Let Claude decide</div>
         </div>
 
-        <div class="infra-key">Veritabanı</div>
+        <div class="infra-key">Database</div>
         <div class="chips" id="dbHostChips" style="margin-top:0">
           <div class="chip" onclick="selectChip(this,'dbHostChips')">Supabase</div>
           <div class="chip" onclick="selectChip(this,'dbHostChips')">Neon</div>
           <div class="chip" onclick="selectChip(this,'dbHostChips')">PlanetScale</div>
-          <div class="chip selected" onclick="selectChip(this,'dbHostChips')">Claude seçsin</div>
+          <div class="chip selected" onclick="selectChip(this,'dbHostChips')">Let Claude decide</div>
         </div>
 
         <div class="infra-key">Auth</div>
@@ -482,7 +483,7 @@
           <div class="chip" onclick="selectChip(this,'authHostChips')">Supabase Auth</div>
           <div class="chip" onclick="selectChip(this,'authHostChips')">Clerk</div>
           <div class="chip" onclick="selectChip(this,'authHostChips')">Auth.js</div>
-          <div class="chip selected" onclick="selectChip(this,'authHostChips')">Claude seçsin</div>
+          <div class="chip selected" onclick="selectChip(this,'authHostChips')">Let Claude decide</div>
         </div>
 
         <div class="infra-key">Email</div>
@@ -490,171 +491,171 @@
           <div class="chip" onclick="selectChip(this,'emailChips')">Resend</div>
           <div class="chip" onclick="selectChip(this,'emailChips')">Brevo</div>
           <div class="chip" onclick="selectChip(this,'emailChips')">SendGrid</div>
-          <div class="chip" onclick="selectChip(this,'emailChips')">Gerekmez</div>
-          <div class="chip selected" onclick="selectChip(this,'emailChips')">Claude seçsin</div>
+          <div class="chip" onclick="selectChip(this,'emailChips')">Not needed</div>
+          <div class="chip selected" onclick="selectChip(this,'emailChips')">Let Claude decide</div>
         </div>
 
-        <div class="infra-key">Dosya depolama</div>
+        <div class="infra-key">File storage</div>
         <div class="chips" id="storageChips" style="margin-top:0">
           <div class="chip" onclick="selectChip(this,'storageChips')">Cloudflare R2</div>
           <div class="chip" onclick="selectChip(this,'storageChips')">Supabase Storage</div>
-          <div class="chip selected" onclick="selectChip(this,'storageChips')">Gerekmez</div>
+          <div class="chip selected" onclick="selectChip(this,'storageChips')">Not needed</div>
         </div>
 
         <div class="infra-key">Domain</div>
         <div class="chips" id="domainChips" style="margin-top:0">
-          <div class="chip selected" onclick="selectChip(this,'domainChips')">Ücretsiz subdomain</div>
-          <div class="chip" onclick="selectChip(this,'domainChips')">Kendi domainim var</div>
-          <div class="chip" onclick="selectChip(this,'domainChips')">Henüz bilmiyorum</div>
+          <div class="chip selected" onclick="selectChip(this,'domainChips')">Free subdomain</div>
+          <div class="chip" onclick="selectChip(this,'domainChips')">I have my own domain</div>
+          <div class="chip" onclick="selectChip(this,'domainChips')">Not decided yet</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 6: Kullanıcı Akışı ─── -->
+  <!-- ─── SECTION 6: User Flow ─── -->
   <div class="section" id="s6">
     <div class="section-header" onclick="toggleSection('s6')">
       <div class="section-num">06</div>
-      <div class="section-title">Kullanıcı Akışı</div>
-      <div class="section-status" id="s6-status">boş</div>
+      <div class="section-title">User Flow</div>
+      <div class="section-status" id="s6-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>Adım adım akış <span class="hint">// 5-8 adım — "değer anını" göster</span></label>
+        <label>Step-by-step flow <span class="hint">// 5-8 steps — show the "value moment"</span></label>
         <div class="flow-steps" id="flowSteps">
-          <div class="flow-step"><span class="step-num">01 →</span><input type="text" placeholder="Kullanıcı siteye girer" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">02 →</span><input type="text" placeholder="Landing'i görür, kayıt olur" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">03 →</span><input type="text" placeholder="Core action — değer yaratan ilk şey" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">04 →</span><input type="text" placeholder="Sonuç / çıktı görür" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">05 →</span><input type="text" placeholder="Geri dönme sebebi" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">01 →</span><input type="text" placeholder="User lands on the site" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">02 →</span><input type="text" placeholder="Sees landing page, signs up" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">03 →</span><input type="text" placeholder="Core action — first value-generating moment" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">04 →</span><input type="text" placeholder="Sees result / output" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">05 →</span><input type="text" placeholder="Reason to come back" oninput="updateProgress()"></div>
         </div>
-        <button class="add-btn" onclick="addFlowStep()">+ Adım Ekle</button>
+        <button class="add-btn" onclick="addFlowStep()">+ Add Step</button>
       </div>
       <div class="field">
-        <label>Kullanıcı rolleri <span class="optional">(opsiyonel — birden fazla rol varsa)</span></label>
-        <input type="text" id="userRoles" placeholder="örn: Admin, Kullanıcı, Ziyaretçi">
+        <label>User roles <span class="optional">(optional — only if multiple roles exist)</span></label>
+        <input type="text" id="userRoles" placeholder="e.g. Admin, User, Guest">
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 7: Gelir Modeli ─── -->
+  <!-- ─── SECTION 7: Revenue Model ─── -->
   <div class="section" id="s7">
     <div class="section-header" onclick="toggleSection('s7')">
       <div class="section-num">07</div>
-      <div class="section-title">Gelir Modeli Detayı</div>
-      <div class="section-status" id="s7-status">boş</div>
+      <div class="section-title">Revenue Model</div>
+      <div class="section-status" id="s7-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>Freemium sınırı <span class="hint">// Ücretsiz planda ne var, duvar nerede?</span></label>
-        <input type="text" id="freemiumLimit" placeholder="örn: Ayda 10 fatura — sonrası ücretli" oninput="updateProgress()">
+        <label>Freemium limit <span class="hint">// What's free, where is the paywall?</span></label>
+        <input type="text" id="freemiumLimit" placeholder="e.g. 10 invoices/month free — upgrade for unlimited" oninput="updateProgress()">
       </div>
       <div class="field">
-        <label>Fiyatlandırma taslağı</label>
+        <label>Pricing tiers</label>
         <div class="pricing-rows">
           <div class="pricing-row">
             <span class="pricing-tier">Free</span>
             <input type="text" placeholder="$0" id="priceA">
-            <input type="text" placeholder="Neler dahil">
+            <input type="text" placeholder="What's included">
           </div>
           <div class="pricing-row">
             <span class="pricing-tier">Starter</span>
-            <input type="text" placeholder="$X/ay" id="priceB">
-            <input type="text" placeholder="Neler dahil">
+            <input type="text" placeholder="$X/mo" id="priceB">
+            <input type="text" placeholder="What's included">
           </div>
           <div class="pricing-row">
             <span class="pricing-tier">Pro</span>
-            <input type="text" placeholder="$X/ay" id="priceC">
-            <input type="text" placeholder="Neler dahil">
+            <input type="text" placeholder="$X/mo" id="priceC">
+            <input type="text" placeholder="What's included">
           </div>
         </div>
       </div>
       <div class="field">
-        <label>Ödeme sağlayıcısı</label>
+        <label>Payment provider</label>
         <div class="chips" id="paymentChips">
           <div class="chip" onclick="selectChip(this,'paymentChips')">Stripe</div>
           <div class="chip" onclick="selectChip(this,'paymentChips')">Lemon Squeezy</div>
           <div class="chip" onclick="selectChip(this,'paymentChips')">Paddle</div>
-          <div class="chip selected" onclick="selectChip(this,'paymentChips')">Henüz bilmiyorum</div>
+          <div class="chip selected" onclick="selectChip(this,'paymentChips')">Not decided yet</div>
         </div>
       </div>
       <div class="field">
-        <label>Hedef metrikler</label>
+        <label>Target metrics</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <input type="text" placeholder="İlk 3 ay hedefi (örn: $500 MRR)" id="metricTarget">
-          <input type="text" placeholder="Kâra geçme eşiği (örn: 50 kullanıcı)" id="metricBreakeven">
+          <input type="text" placeholder="First 3-month goal (e.g. $500 MRR)" id="metricTarget">
+          <input type="text" placeholder="Break-even threshold (e.g. 50 paying users)" id="metricBreakeven">
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 8: Referans & İlham ─── -->
+  <!-- ─── SECTION 8: References & Inspiration ─── -->
   <div class="section" id="s8">
     <div class="section-header" onclick="toggleSection('s8')">
       <div class="section-num">08</div>
-      <div class="section-title">Referans ve İlham</div>
-      <div class="section-status" id="s8-status">boş</div>
+      <div class="section-title">References & Inspiration</div>
+      <div class="section-status" id="s8-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>Benzer ürünler / rakipler <span class="hint">// Ne iyi, ne eksik?</span></label>
-        <textarea id="competitors" placeholder="örn: Wave — ücretsiz ama çok karmaşık UI. Invoice Ninja — açık kaynak ama self-host zor." oninput="updateProgress()"></textarea>
+        <label>Similar products / competitors <span class="hint">// What's good, what's missing?</span></label>
+        <textarea id="competitors" placeholder="e.g. Wave — free but overly complex UI. Invoice Ninja — open source but hard to self-host." oninput="updateProgress()"></textarea>
       </div>
       <div class="field">
-        <label>UI / UX ilham <span class="optional">(opsiyonel)</span></label>
-        <input type="text" id="uiInspo" placeholder="örn: Linear'ın sadeliği, Notion'ın block yapısı">
+        <label>UI / UX inspiration <span class="optional">(optional)</span></label>
+        <input type="text" id="uiInspo" placeholder="e.g. Linear's simplicity, Notion's block structure">
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 9: Başarı Kriterleri ─── -->
+  <!-- ─── SECTION 9: Success Criteria ─── -->
   <div class="section" id="s9">
     <div class="section-header" onclick="toggleSection('s9')">
       <div class="section-num">09</div>
-      <div class="section-title">Başarı Kriterleri</div>
-      <div class="section-status" id="s9-status">boş</div>
+      <div class="section-title">Success Criteria</div>
+      <div class="section-status" id="s9-status">empty</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>MVP bitti sayılır ne zaman? <span class="hint">// Somut kriterler yaz</span></label>
+        <label>When is MVP done? <span class="hint">// Write concrete criteria</span></label>
         <div class="success-list" id="successCriteria">
-          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="örn: Kayıt + login çalışıyor" oninput="updateProgress()"></div>
-          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="örn: Core feature uçtan uca çalışıyor" oninput="updateProgress()"></div>
-          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="örn: docker compose up -d ile ayağa kalkıyor" oninput="updateProgress()"></div>
+          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="e.g. Sign-up + login works end-to-end" oninput="updateProgress()"></div>
+          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="e.g. Core feature works end-to-end" oninput="updateProgress()"></div>
+          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="e.g. Runs with docker compose up -d" oninput="updateProgress()"></div>
         </div>
-        <button class="add-btn" onclick="addSuccess()">+ Kriter Ekle</button>
+        <button class="add-btn" onclick="addSuccess()">+ Add Criterion</button>
       </div>
       <div class="field">
-        <label>İlk 30 gün hedefi</label>
-        <input type="text" id="thirtyDayGoal" placeholder="örn: 100 kayıtlı kullanıcı, 10 ödeme yapan, $200 MRR">
+        <label>First 30-day goal</label>
+        <input type="text" id="thirtyDayGoal" placeholder="e.g. 100 registered users, 10 paying, $200 MRR">
       </div>
     </div>
   </div>
 
-  <!-- ─── SECTION 10: Ek Bağlam ─── -->
+  <!-- ─── SECTION 10: Additional Context ─── -->
   <div class="section" id="s10">
     <div class="section-header" onclick="toggleSection('s10')">
       <div class="section-num">10</div>
-      <div class="section-title">Ek Bağlam <span style="font-weight:400;color:var(--text3)">— opsiyonel</span></div>
-      <div class="section-status" id="s10-status">opsiyonel</div>
+      <div class="section-title">Additional Context <span style="font-weight:400;color:var(--text3)">— optional</span></div>
+      <div class="section-status" id="s10-status">optional</div>
       <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <div class="section-body">
       <div class="field">
-        <label>Sektöre özel bilgi <span class="hint">// Claude'un bilmesi gereken domain knowledge</span></label>
-        <textarea id="domainKnowledge" placeholder="örn: Türkiye'de e-fatura zorunlu, GİB entegrasyonu önemli. Sektörde IBAN ile ödeme yaygın."></textarea>
+        <label>Domain-specific knowledge <span class="hint">// What Claude needs to know about this industry</span></label>
+        <textarea id="domainKnowledge" placeholder="e.g. E-invoicing is mandatory in Turkey, GIB integration is important. IBAN payments are common."></textarea>
       </div>
       <div class="field">
-        <label>Kısıtlar / Riskler</label>
-        <textarea id="risks" placeholder="örn: KVKK uyumu gerekiyor, üçüncü parti API bağımlılığı var, sadece Türkiye pazarı"></textarea>
+        <label>Constraints / Risks</label>
+        <textarea id="risks" placeholder="e.g. GDPR compliance required, third-party API dependency risk, Turkey market only"></textarea>
       </div>
       <div class="field">
-        <label>Zaman kısıtı</label>
-        <input type="text" id="timeConstraint" placeholder="örn: 1 haftada çalışan prototip istiyorum">
+        <label>Time constraint</label>
+        <input type="text" id="timeConstraint" placeholder="e.g. Working prototype in 1 week">
       </div>
     </div>
   </div>
@@ -662,10 +663,10 @@
   <!-- Output area -->
   <div id="output-section">
     <div class="output-header">
-      <div class="output-title">✓ Brief hazır — kopyala &amp; Claude'a yapıştır</div>
+      <div class="output-title">✓ Brief ready — copy &amp; paste into Claude</div>
       <div class="output-actions">
-        <button class="btn-sm" onclick="copyOutput()">Kopyala</button>
-        <button class="btn-sm" onclick="downloadOutput()">İndir .md</button>
+        <button class="btn-sm" onclick="copyOutput()">Copy</button>
+        <button class="btn-sm" onclick="downloadOutput()">Download .md</button>
       </div>
     </div>
     <pre id="md-output"></pre>
@@ -676,8 +677,8 @@
 <!-- Fixed bottom bar -->
 <div class="generate-wrap">
   <div class="generate-inner">
-    <button class="btn-generate" onclick="generateMD()">⬡ Dosyayı Üret</button>
-    <button class="btn-copy" onclick="copyOutput()" id="copyBtn" style="display:none">Kopyala</button>
+    <button class="btn-generate" onclick="generateMD()">⬡ Generate File</button>
+    <button class="btn-copy" onclick="copyOutput()" id="copyBtn" style="display:none">Copy</button>
   </div>
 </div>
 
@@ -701,7 +702,7 @@ function addFeature(listId, dotClass) {
   const list = document.getElementById(listId);
   const row = document.createElement('div');
   row.className = 'feature-row';
-  row.innerHTML = `<div class="feature-dot ${dotClass}"></div><input type="text" placeholder="Yeni özellik">`;
+  row.innerHTML = `<div class="feature-dot ${dotClass}"></div><input type="text" placeholder="New feature">`;
   list.appendChild(row);
 }
 
@@ -712,7 +713,7 @@ function addFlowStep() {
   const list = document.getElementById('flowSteps');
   const row = document.createElement('div');
   row.className = 'flow-step';
-  row.innerHTML = `<span class="step-num">${String(flowCount).padStart(2,'0')} →</span><input type="text" placeholder="Adım ${flowCount}">`;
+  row.innerHTML = `<span class="step-num">${String(flowCount).padStart(2,'0')} →</span><input type="text" placeholder="Step ${flowCount}">`;
   list.appendChild(row);
 }
 
@@ -721,7 +722,7 @@ function addSuccess() {
   const list = document.getElementById('successCriteria');
   const row = document.createElement('div');
   row.className = 'success-row';
-  row.innerHTML = `<span class="check-icon">✓</span><input type="text" placeholder="Yeni kriter">`;
+  row.innerHTML = `<span class="check-icon">✓</span><input type="text" placeholder="New criterion">`;
   list.appendChild(row);
 }
 
@@ -741,7 +742,7 @@ function updateProgress() {
   ];
   const filled = checks.filter(Boolean).length;
   document.getElementById('progressFill').style.width = (filled / 10 * 100) + '%';
-  document.getElementById('progressLabel').textContent = `${filled} / 10 bölüm dolduruldu`;
+  document.getElementById('progressLabel').textContent = `${filled} / 10 sections filled`;
 
   // section statuses
   updateSectionStatus('s1', [val('projectName'), val('summary')]);
@@ -764,13 +765,13 @@ function updateSectionStatus(sectionId, vals) {
   const statusEl = document.getElementById(sectionId + '-status');
   const filled = vals.some(Boolean);
   el.classList.toggle('filled', filled);
-  statusEl.textContent = filled ? '✓ dolu' : 'boş';
+  statusEl.textContent = filled ? '✓ filled' : 'empty';
 }
 
 // ── CHIP VALUE ──
 function chipVal(groupId) {
   const sel = document.getElementById(groupId)?.querySelector('.chip.selected');
-  return sel ? sel.textContent.trim() : 'Claude seçsin';
+  return sel ? sel.textContent.trim() : 'Let Claude decide';
 }
 
 // ── LIST VALUES ──
@@ -800,7 +801,7 @@ function pricingVals() {
 
 // ── GENERATE ──
 function generateMD() {
-  const name = val('projectName') || '[PROJE ADI]';
+  const name = val('projectName') || '[PROJECT NAME]';
   const category = chipVal('categoryChips');
   const summary = val('summary');
   const revenue = chipVal('revenueChips');
@@ -847,90 +848,92 @@ function generateMD() {
   const risks = val('risks');
   const timeConstraint = val('timeConstraint');
 
-  let md = `# 🚀 Proje Brief — ${name}\n\n`;
-  md += `> Oluşturulma: ${new Date().toLocaleDateString('tr-TR', {day:'2-digit',month:'long',year:'numeric'})}\n\n---\n\n`;
+  const date = new Date().toLocaleDateString('en-US', {day:'2-digit',month:'long',year:'numeric'});
+
+  let md = `# 🚀 Project Brief — ${name}\n\n`;
+  md += `> Created: ${date}\n\n---\n\n`;
 
   // 1
-  md += `## 1 · Proje Kimliği\n\n`;
-  md += `| Alan | Değer |\n|---|---|\n`;
-  md += `| **Proje adı** | ${name} |\n`;
-  md += `| **Kategori** | ${category} |\n`;
-  if (summary) md += `| **Tek cümle özet** | ${summary} |\n`;
-  md += `| **Gelir modeli** | ${revenue} |\n\n---\n\n`;
+  md += `## 1 · Project Identity\n\n`;
+  md += `| Field | Value |\n|---|---|\n`;
+  md += `| **Project name** | ${name} |\n`;
+  md += `| **Category** | ${category} |\n`;
+  if (summary) md += `| **One-line summary** | ${summary} |\n`;
+  md += `| **Revenue model** | ${revenue} |\n\n---\n\n`;
 
   // 2
-  md += `## 2 · Problem ve Çözüm\n\n`;
-  if (targetUser) md += `### Kimin problemi?\n${targetUser}\n\n`;
-  if (currentSol) md += `### Şu an nasıl çözüyorlar?\n${currentSol}\n\n`;
-  if (diff) md += `### Fark nedir?\n${diff}\n\n`;
-  if (whyNow) md += `### Neden şimdi?\n${whyNow}\n\n`;
+  md += `## 2 · Problem & Solution\n\n`;
+  if (targetUser) md += `### Whose problem?\n${targetUser}\n\n`;
+  if (currentSol) md += `### How do they solve it today?\n${currentSol}\n\n`;
+  if (diff) md += `### What is the differentiator?\n${diff}\n\n`;
+  if (whyNow) md += `### Why now?\n${whyNow}\n\n`;
   md += `---\n\n`;
 
   // 3
-  md += `## 3 · MVP Özellikleri\n\n`;
-  if (coreF.length) { md += `### 🔴 Core (mutlaka)\n`; coreF.forEach(f => md += `- ${f}\n`); md += '\n'; }
-  if (niceF.length) { md += `### 🟡 Nice-to-have (v1.1)\n`; niceF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  md += `## 3 · MVP Features\n\n`;
+  if (coreF.length) { md += `### 🔴 Must Have (core)\n`; coreF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  if (niceF.length) { md += `### 🟡 Nice to Have (v1.1)\n`; niceF.forEach(f => md += `- ${f}\n`); md += '\n'; }
   if (backlogF.length) { md += `### ⚪ Backlog\n`; backlogF.forEach(f => md += `- ${f}\n`); md += '\n'; }
   md += `---\n\n`;
 
   // 4
-  md += `## 4 · Teknik Tercihler\n\n\`\`\`\nBackend dili    : Python (zorunlu)\nFrontend bilgim : YOK — Claude üretmeli\nWeb framework   : ${framework}\nVeritabanı      : ${db}\nFrontend        : ${fe}\nAuth            : ${auth}\n`;
-  if (techDontWant) md += `İstemediğim     : ${techDontWant}\n`;
-  if (techExtras) md += `Ekstra tercih   : ${techExtras}\n`;
-  md += `\`\`\`\n\n### Zorunlu kısıtlar\n\`\`\`\n- docker compose up -d ile ayağa kalkmalı\n- Tamamen ücretsiz başlangıç\n- Tüm kütüphaneler güncel sürüm (Claude araştırmalı)\n\`\`\`\n\n---\n\n`;
+  md += `## 4 · Technical Preferences\n\n\`\`\`\nBackend language : Python (mandatory)\nFrontend skill   : NONE — Claude must generate\nWeb framework    : ${framework}\nDatabase         : ${db}\nFrontend         : ${fe}\nAuth             : ${auth}\n`;
+  if (techDontWant) md += `Do NOT use       : ${techDontWant}\n`;
+  if (techExtras) md += `Extra preferences: ${techExtras}\n`;
+  md += `\`\`\`\n\n### Hard Constraints\n\`\`\`\n- Must run with: docker compose up -d\n- Zero-cost deployment from day one\n- All libraries must be latest stable versions (Claude must research)\n\`\`\`\n\n---\n\n`;
 
   // 5
-  md += `## 5 · Sıfır Maliyet Altyapısı\n\n`;
-  md += `| Katman | Tercih |\n|---|---|\n`;
+  md += `## 5 · Zero-Cost Infrastructure\n\n`;
+  md += `| Layer | Preference |\n|---|---|\n`;
   md += `| Backend hosting | ${backendHost} |\n`;
   md += `| Frontend hosting | ${frontendHost} |\n`;
-  md += `| Veritabanı | ${dbHost} |\n`;
+  md += `| Database | ${dbHost} |\n`;
   md += `| Auth | ${authHost} |\n`;
-  md += `| Email | ${email} |\n`;
-  md += `| Dosya depolama | ${storage} |\n`;
+  md += `| Email (transactional) | ${email} |\n`;
+  md += `| File storage | ${storage} |\n`;
   md += `| Domain | ${domain} |\n\n---\n\n`;
 
   // 6
-  md += `## 6 · Kullanıcı Akışı\n\n\`\`\`\n`;
+  md += `## 6 · User Flow\n\n\`\`\`\n`;
   if (flow.length) flow.forEach(f => md += `${f}\n`);
-  else md += `(belirtilmedi)\n`;
+  else md += `(not specified)\n`;
   md += `\`\`\`\n`;
-  if (roles) md += `\n### Kullanıcı Rolleri\n${roles}\n`;
+  if (roles) md += `\n### User Roles\n${roles}\n`;
   md += `\n---\n\n`;
 
   // 7
-  md += `## 7 · Gelir Modeli\n\n`;
-  if (freemiumLimit) md += `**Freemium sınırı:** ${freemiumLimit}\n\n`;
-  if (pricing.length) { md += `### Fiyatlandırma\n\`\`\`\n`; pricing.forEach(p => md += `${p}\n`); md += `\`\`\`\n\n`; }
-  md += `**Ödeme sağlayıcısı:** ${payment}\n`;
-  if (metricTarget) md += `\n**Hedef:** ${metricTarget}`;
-  if (metricBreakeven) md += `  |  **Kâra geçme:** ${metricBreakeven}`;
+  md += `## 7 · Revenue Model\n\n`;
+  if (freemiumLimit) md += `**Freemium limit:** ${freemiumLimit}\n\n`;
+  if (pricing.length) { md += `### Pricing Tiers\n\`\`\`\n`; pricing.forEach(p => md += `${p}\n`); md += `\`\`\`\n\n`; }
+  md += `**Payment provider:** ${payment}\n`;
+  if (metricTarget) md += `\n**Target:** ${metricTarget}`;
+  if (metricBreakeven) md += `  |  **Break-even:** ${metricBreakeven}`;
   md += `\n\n---\n\n`;
 
   // 8
-  md += `## 8 · Referans ve İlham\n\n`;
-  if (competitors) md += `### Rakipler\n${competitors}\n\n`;
-  if (uiInspo) md += `### UI İlham\n${uiInspo}\n\n`;
+  md += `## 8 · References & Inspiration\n\n`;
+  if (competitors) md += `### Competitors\n${competitors}\n\n`;
+  if (uiInspo) md += `### UI / UX Inspiration\n${uiInspo}\n\n`;
   md += `---\n\n`;
 
   // 9
-  md += `## 9 · Başarı Kriterleri\n\n`;
+  md += `## 9 · Success Criteria\n\n`;
   if (success.length) { success.forEach(s => md += `${s}\n`); md += '\n'; }
-  if (goal30) md += `**İlk 30 gün hedefi:** ${goal30}\n\n`;
+  if (goal30) md += `**First 30-day goal:** ${goal30}\n\n`;
   md += `---\n\n`;
 
   // 10
   const hasExtra = domainKnowledge || risks || timeConstraint;
   if (hasExtra) {
-    md += `## 10 · Ek Bağlam\n\n`;
-    if (domainKnowledge) md += `### Domain Bilgisi\n${domainKnowledge}\n\n`;
-    if (risks) md += `### Kısıtlar / Riskler\n${risks}\n\n`;
-    if (timeConstraint) md += `**Zaman kısıtı:** ${timeConstraint}\n\n`;
+    md += `## 10 · Additional Context\n\n`;
+    if (domainKnowledge) md += `### Domain Knowledge\n${domainKnowledge}\n\n`;
+    if (risks) md += `### Constraints / Risks\n${risks}\n\n`;
+    if (timeConstraint) md += `**Time constraint:** ${timeConstraint}\n\n`;
     md += `---\n\n`;
   }
 
-  // Sabit bölüm
-  md += `## ✅ Claude'dan Beklentiler\n\n\`\`\`\n1. Kullanılacak tüm kütüphanelerin güncel sürümlerini web'de araştır\n2. Sıfır maliyetle deploy edilebilir tech stack öner ve gerekçele\n3. docker-compose.yml üret (docker compose up -d ile çalışsın)\n4. .env.example dosyası oluştur (gerçek değer koyma)\n5. Proje dosya yapısını göster (tree formatında)\n6. README.md yaz: local kurulum + ücretsiz deploy adımları\n7. Frontend: Python backend'e uyumlu, sade ama kullanılabilir UI\n8. Her servis için Dockerfile yaz\n9. İlk çalışan MVP kodunu üret, placeholder bırakma\n10. Üretim için güvenlik checklist ekle\n\`\`\`\n`;
+  // Fixed expectations block
+  md += `## ✅ Expectations from Claude\n\n\`\`\`\n1. Research the latest stable versions of all required libraries on the web\n2. Propose a zero-cost deployable tech stack and justify each choice\n3. Generate docker-compose.yml (must work with: docker compose up -d)\n4. Create .env.example (no real secrets)\n5. Show the full project file structure (tree format)\n6. Write README.md: local setup + free deployment steps\n7. Frontend: no frontend skills on my end — generate a clean, usable UI\n   compatible with the Python backend (HTMX/Jinja2 or Alpine.js preferred)\n8. Write a Dockerfile for every service\n9. Generate the first working MVP code — no placeholders\n10. Add a production security checklist\n\`\`\`\n`;
 
   document.getElementById('md-output').textContent = md;
   document.getElementById('output-section').style.display = 'block';
@@ -942,14 +945,14 @@ function copyOutput() {
   const text = document.getElementById('md-output').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyBtn');
-    btn.textContent = '✓ Kopyalandı';
-    setTimeout(() => btn.textContent = 'Kopyala', 2000);
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
   });
 }
 
 function downloadOutput() {
   const text = document.getElementById('md-output').textContent;
-  const name = val('projectName') || 'proje';
+  const name = val('projectName') || 'project';
   const blob = new Blob([text], { type: 'text/markdown' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -958,7 +961,7 @@ function downloadOutput() {
 }
 
 // Init
-document.getElementById('s4-status').textContent = 'varsayılan';
+document.getElementById('s4-status').textContent = 'defaults set';
 updateProgress();
 </script>
 </body>
