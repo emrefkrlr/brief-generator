@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proje Brief Üretici</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0f;
+    --bg2: #131318;
+    --bg3: #1a1a22;
+    --bg4: #22222d;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --accent: #7c6dfa;
+    --accent2: #a78bfa;
+    --accent-dim: rgba(124,109,250,0.12);
+    --accent-glow: rgba(124,109,250,0.25);
+    --text: #e8e8f0;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --radius: 10px;
+    --section-gap: 2px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(12,12,15,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .logo { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent2); text-transform: uppercase; }
+  .progress-bar-wrap { flex: 1; max-width: 280px; margin: 0 24px; }
+  .progress-track { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+  .progress-label { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 120px; }
+
+  /* ── HERO ── */
+  .hero { margin-bottom: 48px; }
+  .hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+  .hero h1 span { color: var(--accent2); }
+  .hero p { color: var(--text2); font-family: var(--mono); font-size: 13px; margin-top: 12px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: var(--section-gap);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .section.active { border-color: var(--accent); }
+  .section.filled { border-color: rgba(52,211,153,0.3); }
+
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    background: var(--bg2);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .section-header:hover { background: var(--bg3); }
+
+  .section-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--bg4); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .section.active .section-num { background: var(--accent-dim); border-color: var(--accent); color: var(--accent2); }
+  .section.filled .section-num { background: rgba(52,211,153,0.15); border-color: var(--green); color: var(--green); }
+
+  .section-title { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; flex: 1; }
+  .section-status { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .section.filled .section-status { color: var(--green); }
+
+  .chevron { width: 16px; height: 16px; color: var(--text3); transition: transform 0.2s; }
+  .section.open .chevron { transform: rotate(180deg); }
+
+  .section-body {
+    display: none;
+    padding: 20px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+  .section.open .section-body { display: block; }
+
+  /* ── FORM ELEMENTS ── */
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  label .optional { color: var(--text3); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  label .hint { display: block; font-size: 10px; color: var(--text3); text-transform: none; letter-spacing: 0; margin-top: 2px; font-weight: 400; }
+
+  input[type=text], textarea, select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono); font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    resize: vertical;
+  }
+  input[type=text]:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  textarea { min-height: 80px; }
+  select option { background: var(--bg3); }
+
+  /* ── CHIP SELECTS ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .chip {
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border);
+    font-family: var(--mono); font-size: 12px; color: var(--text2);
+    cursor: pointer; user-select: none;
+    transition: all 0.15s;
+    background: var(--bg3);
+  }
+  .chip:hover { border-color: var(--border-hover); color: var(--text); }
+  .chip.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent2); }
+
+  /* ── FEATURE LISTS ── */
+  .feature-list { display: flex; flex-direction: column; gap: 8px; }
+  .feature-row { display: flex; align-items: center; gap: 8px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-red { background: var(--red); }
+  .dot-amber { background: var(--amber); }
+  .dot-gray { background: var(--text3); }
+  .feature-row input { flex: 1; }
+  .add-btn {
+    margin-top: 8px;
+    background: none; border: 1px dashed var(--border);
+    border-radius: 6px; color: var(--text3);
+    font-family: var(--mono); font-size: 12px;
+    padding: 8px 14px; cursor: pointer; width: 100%;
+    transition: all 0.15s;
+  }
+  .add-btn:hover { border-color: var(--border-hover); color: var(--text2); }
+
+  /* ── INFRA GRID ── */
+  .infra-grid { display: grid; grid-template-columns: 140px 1fr; gap: 8px 12px; align-items: center; }
+  .infra-key { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+
+  /* ── PRICING ROWS ── */
+  .pricing-rows { display: flex; flex-direction: column; gap: 8px; }
+  .pricing-row { display: grid; grid-template-columns: 80px 90px 1fr; gap: 8px; align-items: center; }
+  .pricing-tier { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  /* ── USER FLOW ── */
+  .flow-steps { display: flex; flex-direction: column; gap: 6px; }
+  .flow-step { display: flex; align-items: center; gap: 10px; }
+  .step-num { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
+  .flow-step input { flex: 1; }
+
+  /* ── SUCCESS LIST ── */
+  .success-list { display: flex; flex-direction: column; gap: 6px; }
+  .success-row { display: flex; align-items: center; gap: 8px; }
+  .check-icon { color: var(--green); font-size: 14px; flex-shrink: 0; }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ── GENERATE BUTTON ── */
+  .generate-wrap { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; }
+  .generate-inner {
+    max-width: 780px; margin: 0 auto;
+    padding: 16px 24px;
+    background: rgba(12,12,15,0.95);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    display: flex; gap: 12px; align-items: center;
+  }
+  .btn-generate {
+    flex: 1;
+    background: linear-gradient(135deg, var(--accent), #9f7aea);
+    border: none; border-radius: 8px;
+    color: #fff; font-family: var(--sans); font-size: 14px; font-weight: 700;
+    padding: 14px 24px; cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: opacity 0.15s, transform 0.1s;
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .btn-generate:hover { opacity: 0.9; }
+  .btn-generate:active { transform: scale(0.98); }
+  .btn-copy {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text2);
+    font-family: var(--mono); font-size: 12px;
+    padding: 14px 18px; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-copy:hover { border-color: var(--border-hover); color: var(--text); }
+
+  /* ── OUTPUT ── */
+  #output-section {
+    display: none;
+    margin-top: 32px;
+    border: 1px solid rgba(52,211,153,0.3);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .output-header {
+    background: rgba(52,211,153,0.08);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(52,211,153,0.2);
+  }
+  .output-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; }
+  .output-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text2);
+    font-family: var(--mono); font-size: 11px;
+    padding: 6px 12px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { border-color: var(--border-hover); color: var(--text); }
+  #md-output {
+    background: var(--bg2);
+    padding: 24px;
+    font-family: var(--mono); font-size: 12px;
+    line-height: 1.7; color: var(--text2);
+    white-space: pre-wrap; word-break: break-word;
+    max-height: 500px; overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⬡ Brief Üretici</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 10 bölüm dolduruldu</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Proje Brief<br><span>Üretici</span></h1>
+    <p>// Doldur → Dosyayı Üret → Claude'a yapıştır</p>
+  </div>
+
+  <!-- ─── SECTION 1: Proje Kimliği ─── -->
+  <div class="section active open" id="s1">
+    <div class="section-header" onclick="toggleSection('s1')">
+      <div class="section-num">01</div>
+      <div class="section-title">Proje Kimliği</div>
+      <div class="section-status" id="s1-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Proje adı</label>
+        <input type="text" id="projectName" placeholder="örn: ResumeAI, InvoicePilot, LinkDrop…" oninput="updateProgress()">
+      </div>
+      <div class="field">
+        <label>Kategori</label>
+        <div class="chips" id="categoryChips">
+          <div class="chip" onclick="selectChip(this,'categoryChips')">SaaS</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">Araç / Utility</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">API Servisi</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">İçerik Platformu</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">Marketplace</div>
+          <div class="chip" onclick="selectChip(this,'categoryChips')">Chrome Eklentisi</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tek cümle özet <span class="hint">// [Kime] için [ne yapan] bir [ne]</span></label>
+        <input type="text" id="summary" placeholder="örn: Freelancer'lar için otomatik fatura oluşturan web uygulaması" oninput="updateProgress()">
+      </div>
+      <div class="field">
+        <label>Gelir modeli</label>
+        <div class="chips" id="revenueChips">
+          <div class="chip" onclick="selectChip(this,'revenueChips')">Freemium</div>
+          <div class="chip" onclick="selectChip(this,'revenueChips')">One-time satış</div>
+          <div class="chip" onclick="selectChip(this,'revenueChips')">Subscription</div>
+          <div class="chip" onclick="selectChip(this,'revenueChips')">Usage-based</div>
+          <div class="chip" onclick="selectChip(this,'revenueChips')">Reklam</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 2: Problem & Çözüm ─── -->
+  <div class="section" id="s2">
+    <div class="section-header" onclick="toggleSection('s2')">
+      <div class="section-num">02</div>
+      <div class="section-title">Problem ve Çözüm</div>
+      <div class="section-status" id="s2-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Kimin problemi? <span class="hint">// Mümkün olduğunca spesifik — "herkes" değil</span></label>
+        <textarea id="targetUser" placeholder="örn: Müşteri faturası kesen ama muhasebe yazılımı çok pahalı gelen solo freelancer'lar" oninput="updateProgress()"></textarea>
+      </div>
+      <div class="field">
+        <label>Şu an nasıl çözüyorlar?</label>
+        <textarea id="currentSolution" placeholder="örn: Excel şablonu, Wave, Notion — hepsi ya yavaş ya eksik" oninput="updateProgress()"></textarea>
+      </div>
+      <div class="field">
+        <label>Senin farkın nedir?</label>
+        <textarea id="differentiation" placeholder="örn: Müşteri portali olmadan PDF + WhatsApp ile gönderim, 30 saniyede fatura" oninput="updateProgress()"></textarea>
+      </div>
+      <div class="field">
+        <label>Neden şimdi? <span class="optional">(opsiyonel)</span></label>
+        <input type="text" id="whyNow" placeholder="örn: Vergi sezonu yaklaşıyor / AI ile çok ucuza yapılabilir hale geldi">
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 3: MVP Özellikleri ─── -->
+  <div class="section" id="s3">
+    <div class="section-header" onclick="toggleSection('s3')">
+      <div class="section-num">03</div>
+      <div class="section-title">MVP Özellikleri</div>
+      <div class="section-status" id="s3-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label><span style="color:var(--red)">●</span> Mutlaka olmalı — core <span class="hint">// Max 3 feature</span></label>
+        <div class="feature-list" id="coreFeatures">
+          <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 1" oninput="updateProgress()"></div>
+          <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 2" oninput="updateProgress()"></div>
+          <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 3" oninput="updateProgress()"></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <label><span style="color:var(--amber)">●</span> Güzel olsa iyi — v1.1</label>
+        <div class="feature-list" id="niceFeatures">
+          <div class="feature-row"><div class="feature-dot dot-amber"></div><input type="text" placeholder="Nice-to-have 1"></div>
+          <div class="feature-row"><div class="feature-dot dot-amber"></div><input type="text" placeholder="Nice-to-have 2"></div>
+        </div>
+        <button class="add-btn" onclick="addFeature('niceFeatures','dot-amber')">+ Ekle</button>
+      </div>
+      <div class="divider"></div>
+      <div class="field">
+        <label><span style="color:var(--text3)">●</span> Backlog — sonraki sürüm</label>
+        <div class="feature-list" id="backlogFeatures">
+          <div class="feature-row"><div class="feature-dot dot-gray"></div><input type="text" placeholder="Backlog 1"></div>
+        </div>
+        <button class="add-btn" onclick="addFeature('backlogFeatures','dot-gray')">+ Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 4: Teknik Kısıtlar ─── -->
+  <div class="section" id="s4">
+    <div class="section-header" onclick="toggleSection('s4')">
+      <div class="section-num">04</div>
+      <div class="section-title">Teknik Tercihler</div>
+      <div class="section-status" id="s4-status">sabit</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Web Framework</label>
+        <div class="chips" id="frameworkChips">
+          <div class="chip" onclick="selectChip(this,'frameworkChips')">FastAPI</div>
+          <div class="chip" onclick="selectChip(this,'frameworkChips')">Django</div>
+          <div class="chip" onclick="selectChip(this,'frameworkChips')">Flask</div>
+          <div class="chip selected" onclick="selectChip(this,'frameworkChips')">Claude seçsin</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Veritabanı</label>
+        <div class="chips" id="dbChips">
+          <div class="chip" onclick="selectChip(this,'dbChips')">PostgreSQL</div>
+          <div class="chip" onclick="selectChip(this,'dbChips')">SQLite</div>
+          <div class="chip" onclick="selectChip(this,'dbChips')">MongoDB</div>
+          <div class="chip" onclick="selectChip(this,'dbChips')">Redis (sadece)</div>
+          <div class="chip selected" onclick="selectChip(this,'dbChips')">Claude seçsin</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Frontend yaklaşımı</label>
+        <div class="chips" id="feChips">
+          <div class="chip selected" onclick="selectChip(this,'feChips')">HTMX + Jinja2</div>
+          <div class="chip" onclick="selectChip(this,'feChips')">Alpine.js + Tailwind</div>
+          <div class="chip" onclick="selectChip(this,'feChips')">Vanilla JS</div>
+          <div class="chip" onclick="selectChip(this,'feChips')">Claude seçsin</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Auth yöntemi</label>
+        <div class="chips" id="authChips">
+          <div class="chip" onclick="selectChip(this,'authChips')">JWT</div>
+          <div class="chip" onclick="selectChip(this,'authChips')">Session</div>
+          <div class="chip" onclick="selectChip(this,'authChips')">OAuth (Google)</div>
+          <div class="chip" onclick="selectChip(this,'authChips')">Magic Link</div>
+          <div class="chip selected" onclick="selectChip(this,'authChips')">Claude seçsin</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Kesinlikle istemediğim <span class="optional">(opsiyonel)</span></label>
+        <input type="text" id="techDontWant" placeholder="örn: TypeScript, Kubernetes, PHP">
+      </div>
+      <div class="field">
+        <label>Ek kütüphane / araç tercihleri <span class="optional">(opsiyonel)</span></label>
+        <input type="text" id="techExtras" placeholder="örn: Celery + Redis iş kuyruğu istiyorum, Stripe kesin olsun">
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 5: Sıfır Maliyet Altyapısı ─── -->
+  <div class="section" id="s5">
+    <div class="section-header" onclick="toggleSection('s5')">
+      <div class="section-num">05</div>
+      <div class="section-title">Sıfır Maliyet Altyapısı</div>
+      <div class="section-status" id="s5-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="infra-grid">
+        <div class="infra-key">Backend hosting</div>
+        <div class="chips" id="backendChips" style="margin-top:0">
+          <div class="chip" onclick="selectChip(this,'backendChips')">Railway</div>
+          <div class="chip" onclick="selectChip(this,'backendChips')">Render</div>
+          <div class="chip" onclick="selectChip(this,'backendChips')">Fly.io</div>
+          <div class="chip selected" onclick="selectChip(this,'backendChips')">Claude seçsin</div>
+        </div>
+
+        <div class="infra-key">Frontend hosting</div>
+        <div class="chips" id="frontendHostChips" style="margin-top:0">
+          <div class="chip" onclick="selectChip(this,'frontendHostChips')">Vercel</div>
+          <div class="chip" onclick="selectChip(this,'frontendHostChips')">Netlify</div>
+          <div class="chip" onclick="selectChip(this,'frontendHostChips')">Cloudflare Pages</div>
+          <div class="chip selected" onclick="selectChip(this,'frontendHostChips')">Claude seçsin</div>
+        </div>
+
+        <div class="infra-key">Veritabanı</div>
+        <div class="chips" id="dbHostChips" style="margin-top:0">
+          <div class="chip" onclick="selectChip(this,'dbHostChips')">Supabase</div>
+          <div class="chip" onclick="selectChip(this,'dbHostChips')">Neon</div>
+          <div class="chip" onclick="selectChip(this,'dbHostChips')">PlanetScale</div>
+          <div class="chip selected" onclick="selectChip(this,'dbHostChips')">Claude seçsin</div>
+        </div>
+
+        <div class="infra-key">Auth</div>
+        <div class="chips" id="authHostChips" style="margin-top:0">
+          <div class="chip" onclick="selectChip(this,'authHostChips')">Supabase Auth</div>
+          <div class="chip" onclick="selectChip(this,'authHostChips')">Clerk</div>
+          <div class="chip" onclick="selectChip(this,'authHostChips')">Auth.js</div>
+          <div class="chip selected" onclick="selectChip(this,'authHostChips')">Claude seçsin</div>
+        </div>
+
+        <div class="infra-key">Email</div>
+        <div class="chips" id="emailChips" style="margin-top:0">
+          <div class="chip" onclick="selectChip(this,'emailChips')">Resend</div>
+          <div class="chip" onclick="selectChip(this,'emailChips')">Brevo</div>
+          <div class="chip" onclick="selectChip(this,'emailChips')">SendGrid</div>
+          <div class="chip" onclick="selectChip(this,'emailChips')">Gerekmez</div>
+          <div class="chip selected" onclick="selectChip(this,'emailChips')">Claude seçsin</div>
+        </div>
+
+        <div class="infra-key">Dosya depolama</div>
+        <div class="chips" id="storageChips" style="margin-top:0">
+          <div class="chip" onclick="selectChip(this,'storageChips')">Cloudflare R2</div>
+          <div class="chip" onclick="selectChip(this,'storageChips')">Supabase Storage</div>
+          <div class="chip selected" onclick="selectChip(this,'storageChips')">Gerekmez</div>
+        </div>
+
+        <div class="infra-key">Domain</div>
+        <div class="chips" id="domainChips" style="margin-top:0">
+          <div class="chip selected" onclick="selectChip(this,'domainChips')">Ücretsiz subdomain</div>
+          <div class="chip" onclick="selectChip(this,'domainChips')">Kendi domainim var</div>
+          <div class="chip" onclick="selectChip(this,'domainChips')">Henüz bilmiyorum</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 6: Kullanıcı Akışı ─── -->
+  <div class="section" id="s6">
+    <div class="section-header" onclick="toggleSection('s6')">
+      <div class="section-num">06</div>
+      <div class="section-title">Kullanıcı Akışı</div>
+      <div class="section-status" id="s6-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Adım adım akış <span class="hint">// 5-8 adım — "değer anını" göster</span></label>
+        <div class="flow-steps" id="flowSteps">
+          <div class="flow-step"><span class="step-num">01 →</span><input type="text" placeholder="Kullanıcı siteye girer" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">02 →</span><input type="text" placeholder="Landing'i görür, kayıt olur" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">03 →</span><input type="text" placeholder="Core action — değer yaratan ilk şey" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">04 →</span><input type="text" placeholder="Sonuç / çıktı görür" oninput="updateProgress()"></div>
+          <div class="flow-step"><span class="step-num">05 →</span><input type="text" placeholder="Geri dönme sebebi" oninput="updateProgress()"></div>
+        </div>
+        <button class="add-btn" onclick="addFlowStep()">+ Adım Ekle</button>
+      </div>
+      <div class="field">
+        <label>Kullanıcı rolleri <span class="optional">(opsiyonel — birden fazla rol varsa)</span></label>
+        <input type="text" id="userRoles" placeholder="örn: Admin, Kullanıcı, Ziyaretçi">
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 7: Gelir Modeli ─── -->
+  <div class="section" id="s7">
+    <div class="section-header" onclick="toggleSection('s7')">
+      <div class="section-num">07</div>
+      <div class="section-title">Gelir Modeli Detayı</div>
+      <div class="section-status" id="s7-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Freemium sınırı <span class="hint">// Ücretsiz planda ne var, duvar nerede?</span></label>
+        <input type="text" id="freemiumLimit" placeholder="örn: Ayda 10 fatura — sonrası ücretli" oninput="updateProgress()">
+      </div>
+      <div class="field">
+        <label>Fiyatlandırma taslağı</label>
+        <div class="pricing-rows">
+          <div class="pricing-row">
+            <span class="pricing-tier">Free</span>
+            <input type="text" placeholder="$0" id="priceA">
+            <input type="text" placeholder="Neler dahil">
+          </div>
+          <div class="pricing-row">
+            <span class="pricing-tier">Starter</span>
+            <input type="text" placeholder="$X/ay" id="priceB">
+            <input type="text" placeholder="Neler dahil">
+          </div>
+          <div class="pricing-row">
+            <span class="pricing-tier">Pro</span>
+            <input type="text" placeholder="$X/ay" id="priceC">
+            <input type="text" placeholder="Neler dahil">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ödeme sağlayıcısı</label>
+        <div class="chips" id="paymentChips">
+          <div class="chip" onclick="selectChip(this,'paymentChips')">Stripe</div>
+          <div class="chip" onclick="selectChip(this,'paymentChips')">Lemon Squeezy</div>
+          <div class="chip" onclick="selectChip(this,'paymentChips')">Paddle</div>
+          <div class="chip selected" onclick="selectChip(this,'paymentChips')">Henüz bilmiyorum</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Hedef metrikler</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input type="text" placeholder="İlk 3 ay hedefi (örn: $500 MRR)" id="metricTarget">
+          <input type="text" placeholder="Kâra geçme eşiği (örn: 50 kullanıcı)" id="metricBreakeven">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 8: Referans & İlham ─── -->
+  <div class="section" id="s8">
+    <div class="section-header" onclick="toggleSection('s8')">
+      <div class="section-num">08</div>
+      <div class="section-title">Referans ve İlham</div>
+      <div class="section-status" id="s8-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Benzer ürünler / rakipler <span class="hint">// Ne iyi, ne eksik?</span></label>
+        <textarea id="competitors" placeholder="örn: Wave — ücretsiz ama çok karmaşık UI. Invoice Ninja — açık kaynak ama self-host zor." oninput="updateProgress()"></textarea>
+      </div>
+      <div class="field">
+        <label>UI / UX ilham <span class="optional">(opsiyonel)</span></label>
+        <input type="text" id="uiInspo" placeholder="örn: Linear'ın sadeliği, Notion'ın block yapısı">
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 9: Başarı Kriterleri ─── -->
+  <div class="section" id="s9">
+    <div class="section-header" onclick="toggleSection('s9')">
+      <div class="section-num">09</div>
+      <div class="section-title">Başarı Kriterleri</div>
+      <div class="section-status" id="s9-status">boş</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>MVP bitti sayılır ne zaman? <span class="hint">// Somut kriterler yaz</span></label>
+        <div class="success-list" id="successCriteria">
+          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="örn: Kayıt + login çalışıyor" oninput="updateProgress()"></div>
+          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="örn: Core feature uçtan uca çalışıyor" oninput="updateProgress()"></div>
+          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="örn: docker compose up -d ile ayağa kalkıyor" oninput="updateProgress()"></div>
+        </div>
+        <button class="add-btn" onclick="addSuccess()">+ Kriter Ekle</button>
+      </div>
+      <div class="field">
+        <label>İlk 30 gün hedefi</label>
+        <input type="text" id="thirtyDayGoal" placeholder="örn: 100 kayıtlı kullanıcı, 10 ödeme yapan, $200 MRR">
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 10: Ek Bağlam ─── -->
+  <div class="section" id="s10">
+    <div class="section-header" onclick="toggleSection('s10')">
+      <div class="section-num">10</div>
+      <div class="section-title">Ek Bağlam <span style="font-weight:400;color:var(--text3)">— opsiyonel</span></div>
+      <div class="section-status" id="s10-status">opsiyonel</div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="section-body">
+      <div class="field">
+        <label>Sektöre özel bilgi <span class="hint">// Claude'un bilmesi gereken domain knowledge</span></label>
+        <textarea id="domainKnowledge" placeholder="örn: Türkiye'de e-fatura zorunlu, GİB entegrasyonu önemli. Sektörde IBAN ile ödeme yaygın."></textarea>
+      </div>
+      <div class="field">
+        <label>Kısıtlar / Riskler</label>
+        <textarea id="risks" placeholder="örn: KVKK uyumu gerekiyor, üçüncü parti API bağımlılığı var, sadece Türkiye pazarı"></textarea>
+      </div>
+      <div class="field">
+        <label>Zaman kısıtı</label>
+        <input type="text" id="timeConstraint" placeholder="örn: 1 haftada çalışan prototip istiyorum">
+      </div>
+    </div>
+  </div>
+
+  <!-- Output area -->
+  <div id="output-section">
+    <div class="output-header">
+      <div class="output-title">✓ Brief hazır — kopyala &amp; Claude'a yapıştır</div>
+      <div class="output-actions">
+        <button class="btn-sm" onclick="copyOutput()">Kopyala</button>
+        <button class="btn-sm" onclick="downloadOutput()">İndir .md</button>
+      </div>
+    </div>
+    <pre id="md-output"></pre>
+  </div>
+
+</div>
+
+<!-- Fixed bottom bar -->
+<div class="generate-wrap">
+  <div class="generate-inner">
+    <button class="btn-generate" onclick="generateMD()">⬡ Dosyayı Üret</button>
+    <button class="btn-copy" onclick="copyOutput()" id="copyBtn" style="display:none">Kopyala</button>
+  </div>
+</div>
+
+<script>
+// ── TOGGLE SECTIONS ──
+function toggleSection(id) {
+  const s = document.getElementById(id);
+  const isOpen = s.classList.contains('open');
+  s.classList.toggle('open', !isOpen);
+}
+
+// ── CHIP SELECT ──
+function selectChip(el, groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  updateProgress();
+}
+
+// ── ADD FEATURE ROW ──
+function addFeature(listId, dotClass) {
+  const list = document.getElementById(listId);
+  const row = document.createElement('div');
+  row.className = 'feature-row';
+  row.innerHTML = `<div class="feature-dot ${dotClass}"></div><input type="text" placeholder="Yeni özellik">`;
+  list.appendChild(row);
+}
+
+// ── ADD FLOW STEP ──
+let flowCount = 5;
+function addFlowStep() {
+  flowCount++;
+  const list = document.getElementById('flowSteps');
+  const row = document.createElement('div');
+  row.className = 'flow-step';
+  row.innerHTML = `<span class="step-num">${String(flowCount).padStart(2,'0')} →</span><input type="text" placeholder="Adım ${flowCount}">`;
+  list.appendChild(row);
+}
+
+// ── ADD SUCCESS CRITERION ──
+function addSuccess() {
+  const list = document.getElementById('successCriteria');
+  const row = document.createElement('div');
+  row.className = 'success-row';
+  row.innerHTML = `<span class="check-icon">✓</span><input type="text" placeholder="Yeni kriter">`;
+  list.appendChild(row);
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  const checks = [
+    val('projectName'),
+    val('summary'),
+    val('targetUser'),
+    val('currentSolution'),
+    val('differentiation'),
+    getInputsFrom('coreFeatures'),
+    getInputsFrom('flowSteps'),
+    val('freemiumLimit'),
+    val('competitors'),
+    getInputsFrom('successCriteria'),
+  ];
+  const filled = checks.filter(Boolean).length;
+  document.getElementById('progressFill').style.width = (filled / 10 * 100) + '%';
+  document.getElementById('progressLabel').textContent = `${filled} / 10 bölüm dolduruldu`;
+
+  // section statuses
+  updateSectionStatus('s1', [val('projectName'), val('summary')]);
+  updateSectionStatus('s2', [val('targetUser'), val('currentSolution'), val('differentiation')]);
+  updateSectionStatus('s3', [getInputsFrom('coreFeatures')]);
+  updateSectionStatus('s6', [getInputsFrom('flowSteps')]);
+  updateSectionStatus('s7', [val('freemiumLimit')]);
+  updateSectionStatus('s8', [val('competitors')]);
+  updateSectionStatus('s9', [getInputsFrom('successCriteria')]);
+}
+
+function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function getInputsFrom(listId) {
+  const inputs = document.getElementById(listId)?.querySelectorAll('input');
+  if (!inputs) return '';
+  return Array.from(inputs).some(i => i.value.trim()) ? 'ok' : '';
+}
+function updateSectionStatus(sectionId, vals) {
+  const el = document.getElementById(sectionId);
+  const statusEl = document.getElementById(sectionId + '-status');
+  const filled = vals.some(Boolean);
+  el.classList.toggle('filled', filled);
+  statusEl.textContent = filled ? '✓ dolu' : 'boş';
+}
+
+// ── CHIP VALUE ──
+function chipVal(groupId) {
+  const sel = document.getElementById(groupId)?.querySelector('.chip.selected');
+  return sel ? sel.textContent.trim() : 'Claude seçsin';
+}
+
+// ── LIST VALUES ──
+function listVals(listId) {
+  return Array.from(document.getElementById(listId)?.querySelectorAll('input') || [])
+    .map(i => i.value.trim()).filter(Boolean);
+}
+function flowVals() {
+  return Array.from(document.getElementById('flowSteps')?.querySelectorAll('input') || [])
+    .map((i, idx) => `${String(idx+1).padStart(2,'0')}. ${i.value.trim()}`).filter(l => l.length > 4);
+}
+function successVals() {
+  return Array.from(document.getElementById('successCriteria')?.querySelectorAll('input') || [])
+    .map(i => `✅ ${i.value.trim()}`).filter(l => l.length > 3);
+}
+function pricingVals() {
+  const tiers = ['Free','Starter','Pro'];
+  const rows = document.querySelectorAll('.pricing-row');
+  return Array.from(rows).map((row, i) => {
+    const inputs = row.querySelectorAll('input');
+    const price = inputs[0]?.value?.trim();
+    const desc = inputs[1]?.value?.trim();
+    if (!price && !desc) return null;
+    return `${tiers[i]}: ${price || '$?'} — ${desc || '-'}`;
+  }).filter(Boolean);
+}
+
+// ── GENERATE ──
+function generateMD() {
+  const name = val('projectName') || '[PROJE ADI]';
+  const category = chipVal('categoryChips');
+  const summary = val('summary');
+  const revenue = chipVal('revenueChips');
+  const targetUser = val('targetUser');
+  const currentSol = val('currentSolution');
+  const diff = val('differentiation');
+  const whyNow = val('whyNow');
+
+  const coreF = listVals('coreFeatures');
+  const niceF = listVals('niceFeatures');
+  const backlogF = listVals('backlogFeatures');
+
+  const framework = chipVal('frameworkChips');
+  const db = chipVal('dbChips');
+  const fe = chipVal('feChips');
+  const auth = chipVal('authChips');
+  const techDontWant = val('techDontWant');
+  const techExtras = val('techExtras');
+
+  const backendHost = chipVal('backendChips');
+  const frontendHost = chipVal('frontendHostChips');
+  const dbHost = chipVal('dbHostChips');
+  const authHost = chipVal('authHostChips');
+  const email = chipVal('emailChips');
+  const storage = chipVal('storageChips');
+  const domain = chipVal('domainChips');
+
+  const flow = flowVals();
+  const roles = val('userRoles');
+
+  const freemiumLimit = val('freemiumLimit');
+  const pricing = pricingVals();
+  const payment = chipVal('paymentChips');
+  const metricTarget = val('metricTarget');
+  const metricBreakeven = val('metricBreakeven');
+
+  const competitors = val('competitors');
+  const uiInspo = val('uiInspo');
+
+  const success = successVals();
+  const goal30 = val('thirtyDayGoal');
+
+  const domainKnowledge = val('domainKnowledge');
+  const risks = val('risks');
+  const timeConstraint = val('timeConstraint');
+
+  let md = `# 🚀 Proje Brief — ${name}\n\n`;
+  md += `> Oluşturulma: ${new Date().toLocaleDateString('tr-TR', {day:'2-digit',month:'long',year:'numeric'})}\n\n---\n\n`;
+
+  // 1
+  md += `## 1 · Proje Kimliği\n\n`;
+  md += `| Alan | Değer |\n|---|---|\n`;
+  md += `| **Proje adı** | ${name} |\n`;
+  md += `| **Kategori** | ${category} |\n`;
+  if (summary) md += `| **Tek cümle özet** | ${summary} |\n`;
+  md += `| **Gelir modeli** | ${revenue} |\n\n---\n\n`;
+
+  // 2
+  md += `## 2 · Problem ve Çözüm\n\n`;
+  if (targetUser) md += `### Kimin problemi?\n${targetUser}\n\n`;
+  if (currentSol) md += `### Şu an nasıl çözüyorlar?\n${currentSol}\n\n`;
+  if (diff) md += `### Fark nedir?\n${diff}\n\n`;
+  if (whyNow) md += `### Neden şimdi?\n${whyNow}\n\n`;
+  md += `---\n\n`;
+
+  // 3
+  md += `## 3 · MVP Özellikleri\n\n`;
+  if (coreF.length) { md += `### 🔴 Core (mutlaka)\n`; coreF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  if (niceF.length) { md += `### 🟡 Nice-to-have (v1.1)\n`; niceF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  if (backlogF.length) { md += `### ⚪ Backlog\n`; backlogF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  md += `---\n\n`;
+
+  // 4
+  md += `## 4 · Teknik Tercihler\n\n\`\`\`\nBackend dili    : Python (zorunlu)\nFrontend bilgim : YOK — Claude üretmeli\nWeb framework   : ${framework}\nVeritabanı      : ${db}\nFrontend        : ${fe}\nAuth            : ${auth}\n`;
+  if (techDontWant) md += `İstemediğim     : ${techDontWant}\n`;
+  if (techExtras) md += `Ekstra tercih   : ${techExtras}\n`;
+  md += `\`\`\`\n\n### Zorunlu kısıtlar\n\`\`\`\n- docker compose up -d ile ayağa kalkmalı\n- Tamamen ücretsiz başlangıç\n- Tüm kütüphaneler güncel sürüm (Claude araştırmalı)\n\`\`\`\n\n---\n\n`;
+
+  // 5
+  md += `## 5 · Sıfır Maliyet Altyapısı\n\n`;
+  md += `| Katman | Tercih |\n|---|---|\n`;
+  md += `| Backend hosting | ${backendHost} |\n`;
+  md += `| Frontend hosting | ${frontendHost} |\n`;
+  md += `| Veritabanı | ${dbHost} |\n`;
+  md += `| Auth | ${authHost} |\n`;
+  md += `| Email | ${email} |\n`;
+  md += `| Dosya depolama | ${storage} |\n`;
+  md += `| Domain | ${domain} |\n\n---\n\n`;
+
+  // 6
+  md += `## 6 · Kullanıcı Akışı\n\n\`\`\`\n`;
+  if (flow.length) flow.forEach(f => md += `${f}\n`);
+  else md += `(belirtilmedi)\n`;
+  md += `\`\`\`\n`;
+  if (roles) md += `\n### Kullanıcı Rolleri\n${roles}\n`;
+  md += `\n---\n\n`;
+
+  // 7
+  md += `## 7 · Gelir Modeli\n\n`;
+  if (freemiumLimit) md += `**Freemium sınırı:** ${freemiumLimit}\n\n`;
+  if (pricing.length) { md += `### Fiyatlandırma\n\`\`\`\n`; pricing.forEach(p => md += `${p}\n`); md += `\`\`\`\n\n`; }
+  md += `**Ödeme sağlayıcısı:** ${payment}\n`;
+  if (metricTarget) md += `\n**Hedef:** ${metricTarget}`;
+  if (metricBreakeven) md += `  |  **Kâra geçme:** ${metricBreakeven}`;
+  md += `\n\n---\n\n`;
+
+  // 8
+  md += `## 8 · Referans ve İlham\n\n`;
+  if (competitors) md += `### Rakipler\n${competitors}\n\n`;
+  if (uiInspo) md += `### UI İlham\n${uiInspo}\n\n`;
+  md += `---\n\n`;
+
+  // 9
+  md += `## 9 · Başarı Kriterleri\n\n`;
+  if (success.length) { success.forEach(s => md += `${s}\n`); md += '\n'; }
+  if (goal30) md += `**İlk 30 gün hedefi:** ${goal30}\n\n`;
+  md += `---\n\n`;
+
+  // 10
+  const hasExtra = domainKnowledge || risks || timeConstraint;
+  if (hasExtra) {
+    md += `## 10 · Ek Bağlam\n\n`;
+    if (domainKnowledge) md += `### Domain Bilgisi\n${domainKnowledge}\n\n`;
+    if (risks) md += `### Kısıtlar / Riskler\n${risks}\n\n`;
+    if (timeConstraint) md += `**Zaman kısıtı:** ${timeConstraint}\n\n`;
+    md += `---\n\n`;
+  }
+
+  // Sabit bölüm
+  md += `## ✅ Claude'dan Beklentiler\n\n\`\`\`\n1. Kullanılacak tüm kütüphanelerin güncel sürümlerini web'de araştır\n2. Sıfır maliyetle deploy edilebilir tech stack öner ve gerekçele\n3. docker-compose.yml üret (docker compose up -d ile çalışsın)\n4. .env.example dosyası oluştur (gerçek değer koyma)\n5. Proje dosya yapısını göster (tree formatında)\n6. README.md yaz: local kurulum + ücretsiz deploy adımları\n7. Frontend: Python backend'e uyumlu, sade ama kullanılabilir UI\n8. Her servis için Dockerfile yaz\n9. İlk çalışan MVP kodunu üret, placeholder bırakma\n10. Üretim için güvenlik checklist ekle\n\`\`\`\n`;
+
+  document.getElementById('md-output').textContent = md;
+  document.getElementById('output-section').style.display = 'block';
+  document.getElementById('copyBtn').style.display = 'block';
+  document.getElementById('output-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyOutput() {
+  const text = document.getElementById('md-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Kopyalandı';
+    setTimeout(() => btn.textContent = 'Kopyala', 2000);
+  });
+}
+
+function downloadOutput() {
+  const text = document.getElementById('md-output').textContent;
+  const name = val('projectName') || 'proje';
+  const blob = new Blob([text], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${name.toLowerCase().replace(/\s+/g,'-')}-brief.md`;
+  a.click();
+}
+
+// Init
+document.getElementById('s4-status').textContent = 'varsayılan';
+updateProgress();
+</script>
+</body>
+</html>
