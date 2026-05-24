@@ -3,897 +3,1520 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project Brief Generator</title>
+<title>Project Brief Generator — for AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    /* Solarized Light base */
-    --bg:   #fdf6e3;
-    --bg2:  #eee8d5;
-    --bg3:  #e8e0cc;
-    --bg4:  #ddd6c0;
-    --border: #839496;
-    --border-hover: #657b83;
-    --accent:  #d33682;
-    --accent2: #cb4b16;
-    --accent-dim: rgba(211,54,130,0.10);
-    --accent-glow: rgba(211,54,130,0.20);
-    --text:  #073642;
-    --text2: #586e75;
-    --text3: #93a1a1;
-    --green:  #2aa198;
-    --amber:  #b58900;
-    --red:    #dc322f;
-    --blue:   #268bd2;
-    --mono: 'Space Mono', monospace;
-    --sans: 'Outfit', sans-serif;
-    --radius: 6px;
-    --section-gap: 3px;
-  }
+/* ═══════════════════════════════════════════
+   TOKENS — Solarized palette
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #fdf6e3;
+  --bg2:       #eee8d5;
+  --bg3:       #e3dcc8;
+  --bg4:       #d6cdb8;
+  --surface:   #f5eed8;
+  --border:    rgba(131,148,150,0.35);
+  --border-md: rgba(131,148,150,0.6);
+  --border-hi: #839496;
+  --primary:   #d33682;
+  --primary2:  #cb4b16;
+  --teal:      #2aa198;
+  --blue:      #268bd2;
+  --yellow:    #b58900;
+  --red:       #dc322f;
+  --ink:       #073642;
+  --ink2:      #586e75;
+  --ink3:      #839496;
+  --ink4:      #93a1a1;
+  --mono:      'Space Mono', monospace;
+  --sans:      'Outfit', sans-serif;
+  --r:         8px;
+  --r-sm:      5px;
+  --shadow:    0 1px 3px rgba(7,54,66,0.08), 0 4px 16px rgba(7,54,66,0.06);
+  --shadow-md: 2px 2px 0px rgba(7,54,66,0.12);
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-size: 15px;
+}
 
-  /* ── HEADER ── */
-  header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(253,246,227,0.95);
-    backdrop-filter: blur(16px);
-    border-bottom: 2px solid var(--accent);
-    padding: 0 24px;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 56px;
-  }
-  .logo { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
-  .progress-bar-wrap { flex: 1; max-width: 280px; margin: 0 24px; }
-  .progress-track { height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }  .progress-label { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+::selection { background: rgba(211,54,130,0.18); }
 
-  /* ── LAYOUT ── */
-  .container { max-width: 780px; margin: 0 auto; padding: 40px 24px 120px; }
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(253,246,227,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-md);
+  height: 54px;
+  display: flex; align-items: center;
+  padding: 0 28px; gap: 20px;
+}
 
-  /* ── HERO ── */
-  .hero { margin-bottom: 48px; }
-  .hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
-  .hero h1 span { color: var(--accent); }
-  .hero p { color: var(--text2); font-family: var(--mono); font-size: 13px; margin-top: 12px; }
+.logo-mark {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-mark::before {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: block;
+}
 
-  /* ── SECTIONS ── */
-  .section {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: var(--section-gap);
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .section.active { border-color: var(--accent); }
-  .section.filled { border-color: rgba(42,161,152,0.5); }
+.header-progress {
+  flex: 1; max-width: 240px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.prog-track {
+  height: 3px; background: var(--bg4);
+  border-radius: 2px; overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary2) 100%);
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+.prog-label {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--ink4); letter-spacing: 0.06em;
+}
 
-  .section-header {
-    display: flex; align-items: center; gap: 12px;
-    padding: 16px 20px;
-    cursor: pointer;
-    background: var(--bg2);
-    user-select: none;
-    transition: background 0.15s;
-  }
-  .section-header:hover { background: var(--bg3); }
+.header-actions { margin-left: auto; display: flex; gap: 8px; }
 
-  .section-num {
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--bg4); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 11px; color: var(--text3);
-    flex-shrink: 0; transition: all 0.2s;
-  }
-  .section.active .section-num { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-  .section.filled .section-num { background: rgba(42,161,152,0.15); border-color: var(--green); color: var(--green); }
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.page { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 54px); }
 
-  .section-title { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; flex: 1; }
-  .section-status { font-family: var(--mono); font-size: 10px; color: var(--text3); }
-  .section.filled .section-status { color: var(--green); }
+/* ── Sidebar nav ── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 28px 0;
+  position: sticky; top: 54px;
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+  background: var(--surface);
+}
 
-  .chevron { width: 16px; height: 16px; color: var(--text3); transition: transform 0.2s; }
-  .section.open .chevron { transform: rotate(180deg); }
+.sidebar-section-label {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink4); padding: 0 20px 8px;
+}
 
-  .section-body {
-    display: none;
-    padding: 20px;
-    background: var(--bg2);
-    border-top: 1px solid var(--border);
-  }
-  .section.open .section-body { display: block; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  font-size: 13px; font-weight: 500;
+  color: var(--ink3);
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+.nav-item:hover { color: var(--ink); background: var(--bg3); }
+.nav-item.active { color: var(--primary); border-left-color: var(--primary); background: rgba(211,54,130,0.06); }
+.nav-item.done { color: var(--teal); }
+.nav-item.done .nav-dot { background: var(--teal); }
 
-  /* ── FORM ELEMENTS ── */
-  .field { margin-bottom: 20px; }
-  .field:last-child { margin-bottom: 0; }
+.nav-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink4); width: 18px; flex-shrink: 0;
+}
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--bg4); margin-left: auto; flex-shrink: 0;
+  transition: background 0.2s;
+}
 
-  label {
-    display: block;
-    font-family: var(--mono); font-size: 11px; font-weight: 500;
-    color: var(--text2); letter-spacing: 0.08em; text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  label .optional { color: var(--text3); font-weight: 400; text-transform: none; letter-spacing: 0; }
-  label .hint { display: block; font-size: 10px; color: var(--text3); text-transform: none; letter-spacing: 0; margin-top: 2px; font-weight: 400; }
+.sidebar-divider { height: 1px; background: var(--border); margin: 12px 20px; }
 
-  input[type=text], textarea, select {
-    width: 100%;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text);
-    font-family: var(--mono); font-size: 13px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    resize: vertical;
-  }
-  input[type=text]:focus, textarea:focus, select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  textarea { min-height: 80px; }
-  select option { background: var(--bg3); }
+/* ── Main content ── */
+.main { padding: 40px 48px 160px; max-width: 820px; }
 
-  /* ── CHIP SELECTS ── */
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
-  .chip {
-    padding: 6px 14px; border-radius: 20px;
-    border: 1px solid var(--border);
-    font-family: var(--mono); font-size: 12px; color: var(--text2);
-    cursor: pointer; user-select: none;
-    transition: all 0.15s;
-    background: var(--bg3);
-  }
-  .chip:hover { border-color: var(--border-hover); color: var(--text); }
-  .chip.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 700; }
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero { margin-bottom: 48px; }
 
-  /* ── FEATURE LISTS ── */
-  .feature-list { display: flex; flex-direction: column; gap: 8px; }
-  .feature-row { display: flex; align-items: center; gap: 8px; }
-  .feature-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dot-red { background: var(--red); }
-  .dot-amber { background: var(--amber); }
-  .dot-gray { background: var(--text3); }
-  .feature-row input { flex: 1; }
-  .add-btn {
-    margin-top: 8px;
-    background: none; border: 1px dashed var(--border);
-    border-radius: 6px; color: var(--text3);
-    font-family: var(--mono); font-size: 12px;
-    padding: 8px 14px; cursor: pointer; width: 100%;
-    transition: all 0.15s;
-  }
-  .add-btn:hover { border-color: var(--border-hover); color: var(--text2); }
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; color: var(--primary);
+  text-transform: uppercase; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hero-eyebrow::after {
+  content: '';
+  flex: 1; height: 1px; background: var(--border-md);
+  max-width: 60px;
+}
 
-  /* ── INFRA GRID ── */
-  .infra-grid { display: grid; grid-template-columns: 140px 1fr; gap: 8px 12px; align-items: center; }
-  .infra-key { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+.hero h1 {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -0.03em; color: var(--ink);
+  margin-bottom: 16px;
+}
+.hero h1 em { font-style: normal; color: var(--primary); }
 
-  /* ── PRICING ROWS ── */
-  .pricing-rows { display: flex; flex-direction: column; gap: 8px; }
-  .pricing-row { display: grid; grid-template-columns: 80px 90px 1fr; gap: 8px; align-items: center; }
-  .pricing-tier { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+.hero-desc {
+  font-size: 15px; color: var(--ink2);
+  max-width: 560px; line-height: 1.7;
+}
 
-  /* ── USER FLOW ── */
-  .flow-steps { display: flex; flex-direction: column; gap: 6px; }
-  .flow-step { display: flex; align-items: center; gap: 10px; }
-  .step-num { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
-  .flow-step input { flex: 1; }
+/* ═══════════════════════════════════════════
+   NOTICE CARDS
+═══════════════════════════════════════════ */
+.notice-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 40px;
+}
 
-  /* ── SUCCESS LIST ── */
-  .success-list { display: flex; flex-direction: column; gap: 6px; }
-  .success-row { display: flex; align-items: center; gap: 8px; }
-  .check-icon { color: var(--green); font-size: 14px; flex-shrink: 0; }
+.notice-card {
+  background: var(--bg2);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.notice-card.highlight { border-color: rgba(211,54,130,0.3); background: rgba(211,54,130,0.04); }
+.notice-card.highlight2 { border-color: rgba(42,161,152,0.3); background: rgba(42,161,152,0.04); }
 
-  /* ── DIVIDER ── */
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+.notice-icon {
+  font-size: 18px; flex-shrink: 0;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg3); border-radius: 6px;
+}
 
-  /* ── GENERATE BUTTON ── */
-  .generate-wrap { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; }
-  .generate-inner {
-    max-width: 780px; margin: 0 auto;
-    padding: 16px 24px;
-    background: rgba(253,246,227,0.97);
-    backdrop-filter: blur(16px);
-    border-top: 2px solid var(--accent);
-    display: flex; gap: 12px; align-items: center;
-  }
-  .btn-generate {
-    flex: 1;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none; border-radius: 8px;
-    color: #fff; font-family: var(--sans); font-size: 14px; font-weight: 700;
-    padding: 14px 24px; cursor: pointer;
-    letter-spacing: 0.04em;
-    transition: opacity 0.15s, transform 0.1s;
-    box-shadow: 2px 2px 4px rgba(7,54,66,0.15);
-  }
-  .btn-generate:hover { opacity: 0.9; }
-  .btn-generate:active { transform: scale(0.98); }
-  .btn-copy {
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text2);
-    font-family: var(--mono); font-size: 12px;
-    padding: 14px 18px; cursor: pointer;
-    transition: all 0.15s; white-space: nowrap;
-  }
-  .btn-copy:hover { border-color: var(--border-hover); color: var(--text); }
+.notice-text { flex: 1; }
+.notice-title { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 3px; letter-spacing: 0.02em; }
+.notice-body { font-size: 11px; color: var(--ink3); line-height: 1.5; font-family: var(--mono); }
 
-  /* ── OUTPUT ── */
-  #output-section {
-    display: none;
-    margin-top: 32px;
-    border: 1px solid rgba(42,161,152,0.4);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .output-header {
-    background: rgba(42,161,152,0.1);
-    padding: 14px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid rgba(42,161,152,0.3);
-  }
-  .output-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--green); text-transform: uppercase; }
-  .output-actions { display: flex; gap: 8px; }
-  .btn-sm {
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 6px; color: var(--text2);
-    font-family: var(--mono); font-size: 11px;
-    padding: 6px 12px; cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-sm:hover { border-color: var(--border-hover); color: var(--text); }
-  #md-output {
-    background: #073642;
-    padding: 24px;
-    font-family: var(--mono); font-size: 12px;
-    line-height: 1.7; color: #93a1a1;
-    white-space: pre-wrap; word-break: break-word;
-    max-height: 500px; overflow-y: auto;
-  }
+/* ═══════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════ */
+.section { margin-bottom: 4px; scroll-margin-top: 72px; }
+
+.section-card {
+  border: 1px solid var(--border-md);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+.section-card:hover { border-color: var(--border-hi); }
+.section-card.focused { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(211,54,130,0.1); }
+.section-card.completed { border-color: rgba(42,161,152,0.45); }
+
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 22px;
+  cursor: pointer;
+  background: var(--bg2);
+  user-select: none;
+  transition: background 0.15s;
+}
+.section-header:hover { background: var(--bg3); }
+
+.section-badge {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--bg4); border: 1px solid var(--border-md);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--ink4); flex-shrink: 0;
+  transition: all 0.2s;
+}
+.section-card.focused .section-badge { background: rgba(211,54,130,0.15); border-color: var(--primary); color: var(--primary); }
+.section-card.completed .section-badge { background: rgba(42,161,152,0.15); border-color: var(--teal); color: var(--teal); }
+
+.section-info { flex: 1; }
+.section-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.section-subtitle { font-size: 11px; color: var(--ink4); margin-top: 1px; font-family: var(--mono); }
+
+.section-tag {
+  font-family: var(--mono); font-size: 10px;
+  padding: 3px 8px; border-radius: 20px;
+  border: 1px solid var(--border-md);
+  color: var(--ink4);
+}
+.section-card.completed .section-tag { color: var(--teal); border-color: rgba(42,161,152,0.4); background: rgba(42,161,152,0.08); }
+
+.chevron {
+  width: 16px; height: 16px; color: var(--ink4);
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+  flex-shrink: 0;
+}
+.section-card.open .chevron { transform: rotate(180deg); }
+
+.section-body {
+  display: none;
+  padding: 24px 22px;
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+.section-card.open .section-body { display: block; }
+
+/* ═══════════════════════════════════════════
+   FORM ELEMENTS
+═══════════════════════════════════════════ */
+.field { margin-bottom: 22px; }
+.field:last-child { margin-bottom: 0; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+label, .label {
+  display: block;
+  font-size: 11px; font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 8px;
+  font-family: var(--mono);
+}
+.label-hint {
+  display: block; font-size: 10px;
+  color: var(--ink4); font-weight: 400;
+  text-transform: none; letter-spacing: 0;
+  margin-top: 2px;
+}
+.label-opt { color: var(--ink4); font-weight: 400; }
+
+input[type=text], textarea, select {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border-md);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-family: var(--mono); font-size: 13px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  resize: vertical;
+}
+input[type=text]:hover, textarea:hover { background: var(--bg3); }
+input[type=text]:focus, textarea:focus, select:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(211,54,130,0.12);
+}
+textarea { min-height: 88px; line-height: 1.6; }
+input::placeholder, textarea::placeholder { color: var(--ink4); }
+
+/* ── Chip selector ── */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+
+.chip {
+  padding: 6px 13px; border-radius: 20px;
+  border: 1px solid var(--border-md);
+  font-family: var(--mono); font-size: 11px; font-weight: 400;
+  color: var(--ink3); cursor: pointer; user-select: none;
+  background: var(--bg2);
+  transition: all 0.15s;
+}
+.chip:hover { border-color: var(--border-hi); color: var(--ink); background: var(--bg3); }
+.chip.sel { border-color: var(--primary); background: rgba(211,54,130,0.1); color: var(--primary); font-weight: 700; }
+.chip.sel-teal { border-color: var(--teal); background: rgba(42,161,152,0.1); color: var(--teal); font-weight: 700; }
+.chip.sel-blue { border-color: var(--blue); background: rgba(38,139,210,0.1); color: var(--blue); font-weight: 700; }
+
+/* ── Language + skill pills ── */
+.pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--border-md);
+  font-size: 12px; font-weight: 500; color: var(--ink2);
+  cursor: pointer; user-select: none; background: var(--bg2);
+  transition: all 0.15s;
+}
+.pill:hover { border-color: var(--border-hi); }
+.pill.sel { border-color: var(--blue); background: rgba(38,139,210,0.1); color: var(--blue); }
+.pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* ── Feature rows ── */
+.feature-list { display: flex; flex-direction: column; gap: 7px; }
+.feature-row { display: flex; align-items: center; gap: 9px; }
+.feature-row input { flex: 1; }
+.feature-marker {
+  width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0;
+}
+.marker-must { background: var(--red); }
+.marker-nice { background: var(--yellow); }
+.marker-back { background: var(--ink4); }
+
+.add-row-btn {
+  margin-top: 7px; width: 100%;
+  background: none; border: 1px dashed var(--border-md);
+  border-radius: var(--r-sm); color: var(--ink4);
+  font-family: var(--mono); font-size: 11px;
+  padding: 7px 14px; cursor: pointer;
+  transition: all 0.15s; text-align: left;
+}
+.add-row-btn:hover { border-color: var(--border-hi); color: var(--ink2); background: var(--bg3); }
+
+/* ── Flow steps ── */
+.flow-list { display: flex; flex-direction: column; gap: 6px; }
+.flow-row { display: flex; align-items: center; gap: 10px; }
+.flow-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink4); width: 22px; flex-shrink: 0;
+  text-align: right;
+}
+.flow-arrow { color: var(--ink4); font-size: 11px; flex-shrink: 0; }
+.flow-row input { flex: 1; }
+
+/* ── Success list ── */
+.success-list { display: flex; flex-direction: column; gap: 7px; }
+.success-row { display: flex; align-items: center; gap: 9px; }
+.success-check { color: var(--teal); font-size: 14px; flex-shrink: 0; line-height: 1; }
+.success-row input { flex: 1; }
+
+/* ── Infra grid ── */
+.infra-table { display: flex; flex-direction: column; gap: 10px; }
+.infra-row { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
+.infra-label { font-family: var(--mono); font-size: 11px; color: var(--ink3); }
+
+/* ── Pricing ── */
+.pricing-rows { display: flex; flex-direction: column; gap: 8px; }
+.pricing-row { display: grid; grid-template-columns: 70px 90px 1fr; gap: 10px; align-items: center; }
+.pricing-tier { font-family: var(--mono); font-size: 11px; color: var(--ink3); font-weight: 700; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ── Textarea with counter ── */
+.textarea-wrap { position: relative; }
+.char-count {
+  position: absolute; bottom: 8px; right: 10px;
+  font-family: var(--mono); font-size: 9px;
+  color: var(--ink4); pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   AI NOTES PANEL
+═══════════════════════════════════════════ */
+.ai-notes-panel {
+  margin-bottom: 24px;
+  border: 1px solid rgba(42,161,152,0.35);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: rgba(42,161,152,0.04);
+}
+.ai-notes-header {
+  padding: 12px 18px;
+  background: rgba(42,161,152,0.08);
+  border-bottom: 1px solid rgba(42,161,152,0.2);
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 700; color: var(--teal);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.ai-notes-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.ai-note-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 12px; color: var(--ink2); line-height: 1.5;
+}
+.ai-note-num {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--teal); flex-shrink: 0; margin-top: 1px;
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════
+   BOTTOM BAR + GENERATE
+═══════════════════════════════════════════ */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+  background: rgba(253,246,227,0.96);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-md);
+}
+.bottom-inner {
+  max-width: calc(820px + 220px + 48px);
+  margin: 0 auto;
+  padding: 14px 28px;
+  display: flex; gap: 10px; align-items: center;
+}
+
+.btn-generate {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary2) 100%);
+  border: none; border-radius: var(--r);
+  color: #fff; font-family: var(--sans);
+  font-size: 14px; font-weight: 700;
+  padding: 13px 28px; cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 2px 2px 0px rgba(7,54,66,0.2);
+  transition: opacity 0.15s, transform 0.1s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-generate:hover { opacity: 0.92; }
+.btn-generate:active { transform: scale(0.98); }
+
+.btn-secondary {
+  background: var(--bg3); border: 1px solid var(--border-md);
+  border-radius: var(--r); color: var(--ink2);
+  font-family: var(--mono); font-size: 11px;
+  padding: 13px 18px; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+}
+.btn-secondary:hover { border-color: var(--border-hi); color: var(--ink); }
+
+.bottom-hint {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink4); margin-left: auto;
+}
+
+/* ═══════════════════════════════════════════
+   OUTPUT PANEL
+═══════════════════════════════════════════ */
+.output-panel {
+  display: none;
+  margin-top: 32px;
+  border-radius: var(--r);
+  overflow: hidden;
+  border: 1px solid rgba(42,161,152,0.4);
+}
+.output-top {
+  background: rgba(42,161,152,0.09);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid rgba(42,161,152,0.25);
+}
+.output-title {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; color: var(--teal);
+  text-transform: uppercase; font-family: var(--mono);
+  flex: 1;
+}
+.btn-icon {
+  background: var(--bg2); border: 1px solid var(--border-md);
+  border-radius: var(--r-sm); color: var(--ink2);
+  font-family: var(--mono); font-size: 11px;
+  padding: 6px 12px; cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-icon:hover { border-color: var(--border-hi); color: var(--ink); }
+
+#md-output {
+  background: #002b36;
+  padding: 26px 28px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.75; color: #93a1a1;
+  white-space: pre-wrap; word-break: break-word;
+  max-height: 520px; overflow-y: auto;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 760px) {
+  .page { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 24px 18px 160px; }
+  .notice-grid { grid-template-columns: 1fr; }
+  .field-row, .field-row3 { grid-template-columns: 1fr; }
+  .infra-row { grid-template-columns: 1fr; }
+  .pricing-row { grid-template-columns: 60px 80px 1fr; }
+}
 </style>
 </head>
 <body>
 
+<!-- ══════════════ HEADER ══════════════ -->
 <header>
-  <div class="logo">⬡ Brief Generator</div>
-  <div class="progress-bar-wrap">
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel">0 / 10 sections filled</div>
+  <div class="logo-mark">Brief Generator</div>
+  <div class="header-progress">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-label" id="progLabel">0 / 10 sections filled</div>
   </div>
 </header>
 
-<div class="container">
+<!-- ══════════════ PAGE GRID ══════════════ -->
+<div class="page">
 
-  <div class="hero">
-    <h1>Project Brief<br><span>Generator</span></h1>
-    <p>// Fill → Generate File → Paste into Claude</p>
-  </div>
-
-  <!-- ─── SECTION 1: Project Identity ─── -->
-  <div class="section active open" id="s1">
-    <div class="section-header" onclick="toggleSection('s1')">
-      <div class="section-num">01</div>
-      <div class="section-title">Project Identity</div>
-      <div class="section-status" id="s1-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-section-label">Sections</div>
+    <div class="nav-item active" id="nav-s1" onclick="goTo('s1')">
+      <span class="nav-num">01</span> Project Identity
+      <span class="nav-dot"></span>
     </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Project name</label>
-        <input type="text" id="projectName" placeholder="e.g. ResumeAI, InvoicePilot, LinkDrop…" oninput="updateProgress()">
-      </div>
-      <div class="field">
-        <label>Category</label>
-        <div class="chips" id="categoryChips">
-          <div class="chip" onclick="selectChip(this,'categoryChips')">SaaS</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">Tool / Utility</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">API Service</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">Content Platform</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">Marketplace</div>
-          <div class="chip" onclick="selectChip(this,'categoryChips')">Chrome Extension</div>
-        </div>
-      </div>
-      <div class="field">
-        <label>One-line summary <span class="hint">// [For whom] that [does what] — one sentence</span></label>
-        <input type="text" id="summary" placeholder="e.g. A web app that auto-generates invoices for freelancers in 30 seconds" oninput="updateProgress()">
-      </div>
-      <div class="field">
-        <label>Revenue model</label>
-        <div class="chips" id="revenueChips">
-          <div class="chip" onclick="selectChip(this,'revenueChips')">Freemium</div>
-          <div class="chip" onclick="selectChip(this,'revenueChips')">One-time purchase</div>
-          <div class="chip" onclick="selectChip(this,'revenueChips')">Subscription</div>
-          <div class="chip" onclick="selectChip(this,'revenueChips')">Usage-based</div>
-          <div class="chip" onclick="selectChip(this,'revenueChips')">Advertising</div>
-        </div>
-      </div>
+    <div class="nav-item" id="nav-s2" onclick="goTo('s2')">
+      <span class="nav-num">02</span> Problem & Solution
+      <span class="nav-dot"></span>
     </div>
-  </div>
-
-  <!-- ─── SECTION 2: Problem & Solution ─── -->
-  <div class="section" id="s2">
-    <div class="section-header" onclick="toggleSection('s2')">
-      <div class="section-num">02</div>
-      <div class="section-title">Problem & Solution</div>
-      <div class="section-status" id="s2-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    <div class="nav-item" id="nav-s3" onclick="goTo('s3')">
+      <span class="nav-num">03</span> MVP Features
+      <span class="nav-dot"></span>
     </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Whose problem? <span class="hint">// Be specific — not "everyone"</span></label>
-        <textarea id="targetUser" placeholder="e.g. Solo freelancers who invoice clients but find accounting software too expensive" oninput="updateProgress()"></textarea>
-      </div>
-      <div class="field">
-        <label>How do they solve it today?</label>
-        <textarea id="currentSolution" placeholder="e.g. Excel templates, Wave, Notion — all either slow or missing key features" oninput="updateProgress()"></textarea>
-      </div>
-      <div class="field">
-        <label>What is your differentiator?</label>
-        <textarea id="differentiation" placeholder="e.g. PDF + WhatsApp delivery without a client portal — invoice ready in 30 seconds" oninput="updateProgress()"></textarea>
-      </div>
-      <div class="field">
-        <label>Why now? <span class="optional">(optional)</span></label>
-        <input type="text" id="whyNow" placeholder="e.g. Tax season approaching / now feasible with AI at near-zero cost">
-      </div>
+    <div class="nav-item" id="nav-s4" onclick="goTo('s4')">
+      <span class="nav-num">04</span> Tech Stack
+      <span class="nav-dot"></span>
     </div>
-  </div>
-
-  <!-- ─── SECTION 3: MVP Features ─── -->
-  <div class="section" id="s3">
-    <div class="section-header" onclick="toggleSection('s3')">
-      <div class="section-num">03</div>
-      <div class="section-title">MVP Features</div>
-      <div class="section-status" id="s3-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    <div class="nav-item" id="nav-s5" onclick="goTo('s5')">
+      <span class="nav-num">05</span> Infrastructure
+      <span class="nav-dot"></span>
     </div>
-    <div class="section-body">
-      <div class="field">
-        <label><span style="color:var(--red)">●</span> Must Have — core <span class="hint">// Max 3 features</span></label>
-        <div class="feature-list" id="coreFeatures">
-          <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 1" oninput="updateProgress()"></div>
-          <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 2" oninput="updateProgress()"></div>
-          <div class="feature-row"><div class="feature-dot dot-red"></div><input type="text" placeholder="Core feature 3" oninput="updateProgress()"></div>
-        </div>
-      </div>
-      <div class="divider"></div>
-      <div class="field">
-        <label><span style="color:var(--amber)">●</span> Nice to Have — v1.1</label>
-        <div class="feature-list" id="niceFeatures">
-          <div class="feature-row"><div class="feature-dot dot-amber"></div><input type="text" placeholder="Nice-to-have 1"></div>
-          <div class="feature-row"><div class="feature-dot dot-amber"></div><input type="text" placeholder="Nice-to-have 2"></div>
-        </div>
-        <button class="add-btn" onclick="addFeature('niceFeatures','dot-amber')">+ Add</button>
-      </div>
-      <div class="divider"></div>
-      <div class="field">
-        <label><span style="color:var(--text3)">●</span> Backlog — next version</label>
-        <div class="feature-list" id="backlogFeatures">
-          <div class="feature-row"><div class="feature-dot dot-gray"></div><input type="text" placeholder="Backlog 1"></div>
-        </div>
-        <button class="add-btn" onclick="addFeature('backlogFeatures','dot-gray')">+ Add</button>
-      </div>
+    <div class="nav-item" id="nav-s6" onclick="goTo('s6')">
+      <span class="nav-num">06</span> User Flow
+      <span class="nav-dot"></span>
     </div>
-  </div>
-
-  <!-- ─── SECTION 4: Technical Preferences ─── -->
-  <div class="section" id="s4">
-    <div class="section-header" onclick="toggleSection('s4')">
-      <div class="section-num">04</div>
-      <div class="section-title">Technical Preferences</div>
-      <div class="section-status" id="s4-status">defaults set</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    <div class="nav-item" id="nav-s7" onclick="goTo('s7')">
+      <span class="nav-num">07</span> Revenue Model
+      <span class="nav-dot"></span>
     </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Web Framework</label>
-        <div class="chips" id="frameworkChips">
-          <div class="chip" onclick="selectChip(this,'frameworkChips')">FastAPI</div>
-          <div class="chip" onclick="selectChip(this,'frameworkChips')">Django</div>
-          <div class="chip" onclick="selectChip(this,'frameworkChips')">Flask</div>
-          <div class="chip selected" onclick="selectChip(this,'frameworkChips')">Let Claude decide</div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Database</label>
-        <div class="chips" id="dbChips">
-          <div class="chip" onclick="selectChip(this,'dbChips')">PostgreSQL</div>
-          <div class="chip" onclick="selectChip(this,'dbChips')">SQLite</div>
-          <div class="chip" onclick="selectChip(this,'dbChips')">MongoDB</div>
-          <div class="chip" onclick="selectChip(this,'dbChips')">Redis only</div>
-          <div class="chip selected" onclick="selectChip(this,'dbChips')">Let Claude decide</div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Frontend approach</label>
-        <div class="chips" id="feChips">
-          <div class="chip selected" onclick="selectChip(this,'feChips')">HTMX + Jinja2</div>
-          <div class="chip" onclick="selectChip(this,'feChips')">Alpine.js + Tailwind</div>
-          <div class="chip" onclick="selectChip(this,'feChips')">Vanilla JS</div>
-          <div class="chip" onclick="selectChip(this,'feChips')">Let Claude decide</div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Auth method</label>
-        <div class="chips" id="authChips">
-          <div class="chip" onclick="selectChip(this,'authChips')">JWT</div>
-          <div class="chip" onclick="selectChip(this,'authChips')">Session</div>
-          <div class="chip" onclick="selectChip(this,'authChips')">OAuth (Google)</div>
-          <div class="chip" onclick="selectChip(this,'authChips')">Magic Link</div>
-          <div class="chip selected" onclick="selectChip(this,'authChips')">Let Claude decide</div>
-        </div>
-      </div>
-      <div class="field">
-        <label>Do NOT use <span class="optional">(optional)</span></label>
-        <input type="text" id="techDontWant" placeholder="e.g. TypeScript, Kubernetes, PHP">
-      </div>
-      <div class="field">
-        <label>Extra library / tool preferences <span class="optional">(optional)</span></label>
-        <input type="text" id="techExtras" placeholder="e.g. Celery + Redis task queue, must use Stripe">
-      </div>
+    <div class="nav-item" id="nav-s8" onclick="goTo('s8')">
+      <span class="nav-num">08</span> References
+      <span class="nav-dot"></span>
     </div>
-  </div>
-
-  <!-- ─── SECTION 5: Zero-Cost Infrastructure ─── -->
-  <div class="section" id="s5">
-    <div class="section-header" onclick="toggleSection('s5')">
-      <div class="section-num">05</div>
-      <div class="section-title">Zero-Cost Infrastructure</div>
-      <div class="section-status" id="s5-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    <div class="nav-item" id="nav-s9" onclick="goTo('s9')">
+      <span class="nav-num">09</span> Success Criteria
+      <span class="nav-dot"></span>
     </div>
-    <div class="section-body">
-      <div class="infra-grid">
-        <div class="infra-key">Backend hosting</div>
-        <div class="chips" id="backendChips" style="margin-top:0">
-          <div class="chip" onclick="selectChip(this,'backendChips')">Railway</div>
-          <div class="chip" onclick="selectChip(this,'backendChips')">Render</div>
-          <div class="chip" onclick="selectChip(this,'backendChips')">Fly.io</div>
-          <div class="chip selected" onclick="selectChip(this,'backendChips')">Let Claude decide</div>
-        </div>
+    <div class="nav-item" id="nav-s10" onclick="goTo('s10')">
+      <span class="nav-num">10</span> Extra Context
+      <span class="nav-dot"></span>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="nav-item" style="color:var(--primary);font-weight:600" onclick="generateMD()">
+      <span class="nav-num">→</span> Generate Brief
+      <span class="nav-dot" style="background:var(--primary)"></span>
+    </div>
+  </nav>
 
-        <div class="infra-key">Frontend hosting</div>
-        <div class="chips" id="frontendHostChips" style="margin-top:0">
-          <div class="chip" onclick="selectChip(this,'frontendHostChips')">Vercel</div>
-          <div class="chip" onclick="selectChip(this,'frontendHostChips')">Netlify</div>
-          <div class="chip" onclick="selectChip(this,'frontendHostChips')">Cloudflare Pages</div>
-          <div class="chip selected" onclick="selectChip(this,'frontendHostChips')">Let Claude decide</div>
-        </div>
+  <!-- ── Main ── -->
+  <main class="main">
 
-        <div class="infra-key">Database</div>
-        <div class="chips" id="dbHostChips" style="margin-top:0">
-          <div class="chip" onclick="selectChip(this,'dbHostChips')">Supabase</div>
-          <div class="chip" onclick="selectChip(this,'dbHostChips')">Neon</div>
-          <div class="chip" onclick="selectChip(this,'dbHostChips')">PlanetScale</div>
-          <div class="chip selected" onclick="selectChip(this,'dbHostChips')">Let Claude decide</div>
-        </div>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">AI Project Brief Generator</div>
+      <h1>Turn your idea into<br>an <em>AI-ready</em> brief</h1>
+      <p class="hero-desc">Fill in the sections below. When you're done, click <strong>Generate Brief</strong> to get a structured Markdown document — ready to paste directly into any AI assistant.</p>
+    </div>
 
-        <div class="infra-key">Auth</div>
-        <div class="chips" id="authHostChips" style="margin-top:0">
-          <div class="chip" onclick="selectChip(this,'authHostChips')">Supabase Auth</div>
-          <div class="chip" onclick="selectChip(this,'authHostChips')">Clerk</div>
-          <div class="chip" onclick="selectChip(this,'authHostChips')">Auth.js</div>
-          <div class="chip selected" onclick="selectChip(this,'authHostChips')">Let Claude decide</div>
+    <!-- NOTICE CARDS -->
+    <div class="notice-grid">
+      <div class="notice-card highlight">
+        <div class="notice-icon">🔍</div>
+        <div class="notice-text">
+          <div class="notice-title">Always research first</div>
+          <div class="notice-body">AI will search the web for latest library versions &amp; up-to-date technical approaches before writing any code.</div>
         </div>
-
-        <div class="infra-key">Email</div>
-        <div class="chips" id="emailChips" style="margin-top:0">
-          <div class="chip" onclick="selectChip(this,'emailChips')">Resend</div>
-          <div class="chip" onclick="selectChip(this,'emailChips')">Brevo</div>
-          <div class="chip" onclick="selectChip(this,'emailChips')">SendGrid</div>
-          <div class="chip" onclick="selectChip(this,'emailChips')">Not needed</div>
-          <div class="chip selected" onclick="selectChip(this,'emailChips')">Let Claude decide</div>
+      </div>
+      <div class="notice-card highlight2">
+        <div class="notice-icon">💸</div>
+        <div class="notice-text">
+          <div class="notice-title">Verify free tier limits</div>
+          <div class="notice-body">AI will verify current free tier availability (e.g. Render, Supabase, Resend) before recommending — limits change often.</div>
         </div>
-
-        <div class="infra-key">File storage</div>
-        <div class="chips" id="storageChips" style="margin-top:0">
-          <div class="chip" onclick="selectChip(this,'storageChips')">Cloudflare R2</div>
-          <div class="chip" onclick="selectChip(this,'storageChips')">Supabase Storage</div>
-          <div class="chip selected" onclick="selectChip(this,'storageChips')">Not needed</div>
+      </div>
+      <div class="notice-card">
+        <div class="notice-icon">🌐</div>
+        <div class="notice-text">
+          <div class="notice-title">Universal — any language</div>
+          <div class="notice-body">Works for any tech stack — Python, Node.js, Go, Ruby, or no-code. AI adapts to your skill level.</div>
         </div>
-
-        <div class="infra-key">Domain</div>
-        <div class="chips" id="domainChips" style="margin-top:0">
-          <div class="chip selected" onclick="selectChip(this,'domainChips')">Free subdomain</div>
-          <div class="chip" onclick="selectChip(this,'domainChips')">I have my own domain</div>
-          <div class="chip" onclick="selectChip(this,'domainChips')">Not decided yet</div>
+      </div>
+      <div class="notice-card">
+        <div class="notice-icon">🐳</div>
+        <div class="notice-text">
+          <div class="notice-title">Local dev ready</div>
+          <div class="notice-body">Output includes Docker Compose config for local development — just one command to spin up.</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ─── SECTION 6: User Flow ─── -->
-  <div class="section" id="s6">
-    <div class="section-header" onclick="toggleSection('s6')">
-      <div class="section-num">06</div>
-      <div class="section-title">User Flow</div>
-      <div class="section-status" id="s6-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Step-by-step flow <span class="hint">// 5-8 steps — show the "value moment"</span></label>
-        <div class="flow-steps" id="flowSteps">
-          <div class="flow-step"><span class="step-num">01 →</span><input type="text" placeholder="User lands on the site" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">02 →</span><input type="text" placeholder="Sees landing page, signs up" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">03 →</span><input type="text" placeholder="Core action — first value-generating moment" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">04 →</span><input type="text" placeholder="Sees result / output" oninput="updateProgress()"></div>
-          <div class="flow-step"><span class="step-num">05 →</span><input type="text" placeholder="Reason to come back" oninput="updateProgress()"></div>
-        </div>
-        <button class="add-btn" onclick="addFlowStep()">+ Add Step</button>
-      </div>
-      <div class="field">
-        <label>User roles <span class="optional">(optional — only if multiple roles exist)</span></label>
-        <input type="text" id="userRoles" placeholder="e.g. Admin, User, Guest">
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── SECTION 7: Revenue Model ─── -->
-  <div class="section" id="s7">
-    <div class="section-header" onclick="toggleSection('s7')">
-      <div class="section-num">07</div>
-      <div class="section-title">Revenue Model</div>
-      <div class="section-status" id="s7-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Freemium limit <span class="hint">// What's free, where is the paywall?</span></label>
-        <input type="text" id="freemiumLimit" placeholder="e.g. 10 invoices/month free — upgrade for unlimited" oninput="updateProgress()">
-      </div>
-      <div class="field">
-        <label>Pricing tiers</label>
-        <div class="pricing-rows">
-          <div class="pricing-row">
-            <span class="pricing-tier">Free</span>
-            <input type="text" placeholder="$0" id="priceA">
-            <input type="text" placeholder="What's included">
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 1: Project Identity        -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s1">
+      <div class="section-card open" id="card-s1">
+        <div class="section-header" onclick="toggleSection('s1')">
+          <div class="section-badge">01</div>
+          <div class="section-info">
+            <div class="section-title">Project Identity</div>
+            <div class="section-subtitle">name · category · revenue model</div>
           </div>
-          <div class="pricing-row">
-            <span class="pricing-tier">Starter</span>
-            <input type="text" placeholder="$X/mo" id="priceB">
-            <input type="text" placeholder="What's included">
+          <div class="section-tag" id="tag-s1">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field-row">
+            <div class="field">
+              <label>Project name</label>
+              <input type="text" id="projectName" placeholder="e.g. InvoicePilot, LinkDrop, ResumeAI" oninput="tick()">
+            </div>
+            <div class="field">
+              <label>Category</label>
+              <div class="chips" id="catChips">
+                <div class="chip" onclick="chip(this,'catChips')">SaaS</div>
+                <div class="chip" onclick="chip(this,'catChips')">Tool / Utility</div>
+                <div class="chip" onclick="chip(this,'catChips')">API Service</div>
+                <div class="chip" onclick="chip(this,'catChips')">Content Platform</div>
+                <div class="chip" onclick="chip(this,'catChips')">Marketplace</div>
+                <div class="chip" onclick="chip(this,'catChips')">Mobile App</div>
+                <div class="chip" onclick="chip(this,'catChips')">Browser Extension</div>
+                <div class="chip" onclick="chip(this,'catChips')">Other</div>
+              </div>
+            </div>
           </div>
-          <div class="pricing-row">
-            <span class="pricing-tier">Pro</span>
-            <input type="text" placeholder="$X/mo" id="priceC">
-            <input type="text" placeholder="What's included">
+
+          <div class="field">
+            <label>One-line summary
+              <span class="label-hint">// [For whom] that [does what] — make it crystal clear</span>
+            </label>
+            <input type="text" id="summary" placeholder="e.g. A web app that auto-generates invoices for freelancers in under 30 seconds" oninput="tick()">
+          </div>
+
+          <div class="field">
+            <label>Revenue model</label>
+            <div class="chips" id="revChips">
+              <div class="chip" onclick="chip(this,'revChips')">Freemium</div>
+              <div class="chip" onclick="chip(this,'revChips')">One-time purchase</div>
+              <div class="chip" onclick="chip(this,'revChips')">Subscription (MRR)</div>
+              <div class="chip" onclick="chip(this,'revChips')">Usage-based</div>
+              <div class="chip" onclick="chip(this,'revChips')">Advertising</div>
+              <div class="chip" onclick="chip(this,'revChips')">Open source + Pro</div>
+              <div class="chip" onclick="chip(this,'revChips')">Not sure yet</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="field">
-        <label>Payment provider</label>
-        <div class="chips" id="paymentChips">
-          <div class="chip" onclick="selectChip(this,'paymentChips')">Stripe</div>
-          <div class="chip" onclick="selectChip(this,'paymentChips')">Lemon Squeezy</div>
-          <div class="chip" onclick="selectChip(this,'paymentChips')">Paddle</div>
-          <div class="chip selected" onclick="selectChip(this,'paymentChips')">Not decided yet</div>
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 2: Problem & Solution      -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s2">
+      <div class="section-card" id="card-s2">
+        <div class="section-header" onclick="toggleSection('s2')">
+          <div class="section-badge">02</div>
+          <div class="section-info">
+            <div class="section-title">Problem & Solution</div>
+            <div class="section-subtitle">who · why · what makes you different</div>
+          </div>
+          <div class="section-tag" id="tag-s2">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>Who has this problem?
+              <span class="label-hint">// Be specific — "solo freelancers who invoice 5+ clients/month", not "everyone"</span>
+            </label>
+            <textarea id="targetUser" placeholder="e.g. Solo freelancers who invoice clients monthly but find tools like QuickBooks too expensive and complex" oninput="tick()"></textarea>
+          </div>
+          <div class="field">
+            <label>How do they solve it today?
+              <span class="label-hint">// Competitors, workarounds, manual methods</span>
+            </label>
+            <textarea id="currentSol" placeholder="e.g. Excel templates, Wave (free but complex), Notion — all either slow or missing key features like WhatsApp delivery" oninput="tick()"></textarea>
+          </div>
+          <div class="field">
+            <label>What is your differentiator?
+              <span class="label-hint">// One clear mechanism — not just "faster" or "cheaper"</span>
+            </label>
+            <textarea id="diff" placeholder="e.g. Invoice ready in 30 seconds, sent directly via PDF + WhatsApp — no client portal needed" oninput="tick()"></textarea>
+          </div>
+          <div class="field">
+            <label>Why now? <span class="label-opt">(optional)</span></label>
+            <input type="text" id="whyNow" placeholder="e.g. New regulation, tech shift, underserved market gap you just discovered">
+          </div>
         </div>
       </div>
-      <div class="field">
-        <label>Target metrics</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <input type="text" placeholder="First 3-month goal (e.g. $500 MRR)" id="metricTarget">
-          <input type="text" placeholder="Break-even threshold (e.g. 50 paying users)" id="metricBreakeven">
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 3: MVP Features            -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s3">
+      <div class="section-card" id="card-s3">
+        <div class="section-header" onclick="toggleSection('s3')">
+          <div class="section-badge">03</div>
+          <div class="section-info">
+            <div class="section-title">MVP Features</div>
+            <div class="section-subtitle">must have · nice to have · backlog</div>
+          </div>
+          <div class="section-tag" id="tag-s3">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <div class="label"><span style="color:var(--red)">■</span> Must Have — Core <span class="label-hint">// Max 3 features. The product lives or dies by these.</span></div>
+            <div class="feature-list" id="coreList">
+              <div class="feature-row"><div class="feature-marker marker-must"></div><input type="text" placeholder="Core feature 1" oninput="tick()"></div>
+              <div class="feature-row"><div class="feature-marker marker-must"></div><input type="text" placeholder="Core feature 2" oninput="tick()"></div>
+              <div class="feature-row"><div class="feature-marker marker-must"></div><input type="text" placeholder="Core feature 3" oninput="tick()"></div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="field">
+            <div class="label"><span style="color:var(--yellow)">■</span> Nice to Have — v1.1 <span class="label-hint">// Won't block launch but would add value</span></div>
+            <div class="feature-list" id="niceList">
+              <div class="feature-row"><div class="feature-marker marker-nice"></div><input type="text" placeholder="Nice-to-have feature"></div>
+              <div class="feature-row"><div class="feature-marker marker-nice"></div><input type="text" placeholder="Nice-to-have feature"></div>
+            </div>
+            <button class="add-row-btn" onclick="addRow('niceList','nice')">+ Add feature</button>
+          </div>
+          <div class="divider"></div>
+          <div class="field">
+            <div class="label"><span style="color:var(--ink4)">■</span> Backlog — future versions</div>
+            <div class="feature-list" id="backList">
+              <div class="feature-row"><div class="feature-marker marker-back"></div><input type="text" placeholder="Future idea"></div>
+            </div>
+            <button class="add-row-btn" onclick="addRow('backList','back')">+ Add feature</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ─── SECTION 8: References & Inspiration ─── -->
-  <div class="section" id="s8">
-    <div class="section-header" onclick="toggleSection('s8')">
-      <div class="section-num">08</div>
-      <div class="section-title">References & Inspiration</div>
-      <div class="section-status" id="s8-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Similar products / competitors <span class="hint">// What's good, what's missing?</span></label>
-        <textarea id="competitors" placeholder="e.g. Wave — free but overly complex UI. Invoice Ninja — open source but hard to self-host." oninput="updateProgress()"></textarea>
-      </div>
-      <div class="field">
-        <label>UI / UX inspiration <span class="optional">(optional)</span></label>
-        <input type="text" id="uiInspo" placeholder="e.g. Linear's simplicity, Notion's block structure">
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── SECTION 9: Success Criteria ─── -->
-  <div class="section" id="s9">
-    <div class="section-header" onclick="toggleSection('s9')">
-      <div class="section-num">09</div>
-      <div class="section-title">Success Criteria</div>
-      <div class="section-status" id="s9-status">empty</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-    <div class="section-body">
-      <div class="field">
-        <label>When is MVP done? <span class="hint">// Write concrete criteria</span></label>
-        <div class="success-list" id="successCriteria">
-          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="e.g. Sign-up + login works end-to-end" oninput="updateProgress()"></div>
-          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="e.g. Core feature works end-to-end" oninput="updateProgress()"></div>
-          <div class="success-row"><span class="check-icon">✓</span><input type="text" placeholder="e.g. Runs with docker compose up -d" oninput="updateProgress()"></div>
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 4: Tech Stack              -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s4">
+      <div class="section-card" id="card-s4">
+        <div class="section-header" onclick="toggleSection('s4')">
+          <div class="section-badge">04</div>
+          <div class="section-info">
+            <div class="section-title">Tech Stack</div>
+            <div class="section-subtitle">languages · frameworks · constraints</div>
+          </div>
+          <div class="section-tag" id="tag-s4">defaults set</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
-        <button class="add-btn" onclick="addSuccess()">+ Add Criterion</button>
-      </div>
-      <div class="field">
-        <label>First 30-day goal</label>
-        <input type="text" id="thirtyDayGoal" placeholder="e.g. 100 registered users, 10 paying, $200 MRR">
-      </div>
-    </div>
-  </div>
+        <div class="section-body">
 
-  <!-- ─── SECTION 10: Additional Context ─── -->
-  <div class="section" id="s10">
-    <div class="section-header" onclick="toggleSection('s10')">
-      <div class="section-num">10</div>
-      <div class="section-title">Additional Context <span style="font-weight:400;color:var(--text3)">— optional</span></div>
-      <div class="section-status" id="s10-status">optional</div>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-    <div class="section-body">
-      <div class="field">
-        <label>Domain-specific knowledge <span class="hint">// What Claude needs to know about this industry</span></label>
-        <textarea id="domainKnowledge" placeholder="e.g. E-invoicing is mandatory in Turkey, GIB integration is important. IBAN payments are common."></textarea>
-      </div>
-      <div class="field">
-        <label>Constraints / Risks</label>
-        <textarea id="risks" placeholder="e.g. GDPR compliance required, third-party API dependency risk, Turkey market only"></textarea>
-      </div>
-      <div class="field">
-        <label>Time constraint</label>
-        <input type="text" id="timeConstraint" placeholder="e.g. Working prototype in 1 week">
-      </div>
-    </div>
-  </div>
+          <div class="field">
+            <label>Languages / Frameworks I know
+              <span class="label-hint">// Select all that apply — or leave empty to let AI choose the best fit</span>
+            </label>
+            <div class="pill-group" id="langPills">
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>Python</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>JavaScript</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>TypeScript</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>Go</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>Ruby</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>PHP</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>Rust</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>Java</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>C#</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>No-code / Low-code</div>
+              <div class="pill" onclick="pillToggle(this)"><div class="pill-dot"></div>None — AI decides</div>
+            </div>
+          </div>
 
-  <!-- Output area -->
-  <div id="output-section">
-    <div class="output-header">
-      <div class="output-title">✓ Brief ready — copy &amp; paste into Claude</div>
-      <div class="output-actions">
-        <button class="btn-sm" onclick="copyOutput()">Copy</button>
-        <button class="btn-sm" onclick="downloadOutput()">Download .md</button>
+          <div class="field-row">
+            <div class="field">
+              <label>Backend framework preference</label>
+              <div class="chips" id="beChips">
+                <div class="chip" onclick="chip(this,'beChips')">FastAPI</div>
+                <div class="chip" onclick="chip(this,'beChips')">Django</div>
+                <div class="chip" onclick="chip(this,'beChips')">Flask</div>
+                <div class="chip" onclick="chip(this,'beChips')">Express.js</div>
+                <div class="chip" onclick="chip(this,'beChips')">NestJS</div>
+                <div class="chip" onclick="chip(this,'beChips')">Rails</div>
+                <div class="chip" onclick="chip(this,'beChips')">Laravel</div>
+                <div class="chip sel" onclick="chip(this,'beChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Frontend approach</label>
+              <div class="chips" id="feChips">
+                <div class="chip" onclick="chip(this,'feChips')">React</div>
+                <div class="chip" onclick="chip(this,'feChips')">Vue</div>
+                <div class="chip" onclick="chip(this,'feChips')">Svelte</div>
+                <div class="chip" onclick="chip(this,'feChips')">HTMX + Jinja2</div>
+                <div class="chip" onclick="chip(this,'feChips')">Alpine.js</div>
+                <div class="chip" onclick="chip(this,'feChips')">Vanilla JS</div>
+                <div class="chip" onclick="chip(this,'feChips')">No-code (Webflow)</div>
+                <div class="chip sel" onclick="chip(this,'feChips')">AI decides</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Database</label>
+              <div class="chips" id="dbChips">
+                <div class="chip" onclick="chip(this,'dbChips')">PostgreSQL</div>
+                <div class="chip" onclick="chip(this,'dbChips')">MySQL</div>
+                <div class="chip" onclick="chip(this,'dbChips')">SQLite</div>
+                <div class="chip" onclick="chip(this,'dbChips')">MongoDB</div>
+                <div class="chip" onclick="chip(this,'dbChips')">Redis</div>
+                <div class="chip sel" onclick="chip(this,'dbChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Auth method</label>
+              <div class="chips" id="authChips">
+                <div class="chip" onclick="chip(this,'authChips')">JWT</div>
+                <div class="chip" onclick="chip(this,'authChips')">Session-based</div>
+                <div class="chip" onclick="chip(this,'authChips')">OAuth (Google / GitHub)</div>
+                <div class="chip" onclick="chip(this,'authChips')">Magic Link</div>
+                <div class="chip" onclick="chip(this,'authChips')">Passkey</div>
+                <div class="chip sel" onclick="chip(this,'authChips')">AI decides</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>My frontend experience level</label>
+            <div class="chips" id="feExpChips">
+              <div class="chip" onclick="chip(this,'feExpChips')">None — AI must build it all</div>
+              <div class="chip" onclick="chip(this,'feExpChips')">Basic HTML/CSS</div>
+              <div class="chip" onclick="chip(this,'feExpChips')">Comfortable with JS</div>
+              <div class="chip" onclick="chip(this,'feExpChips')">Confident with React/Vue</div>
+              <div class="chip" onclick="chip(this,'feExpChips')">Full-stack</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Technologies to avoid <span class="label-opt">(optional)</span></label>
+              <input type="text" id="techAvoid" placeholder="e.g. Kubernetes, TypeScript, PHP">
+            </div>
+            <div class="field">
+              <label>Specific tools / libraries required <span class="label-opt">(optional)</span></label>
+              <input type="text" id="techRequire" placeholder="e.g. Stripe, Celery, OpenAI API">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Local development requirement</label>
+            <div class="chips" id="localChips">
+              <div class="chip sel" onclick="chip(this,'localChips')">Docker Compose (docker compose up -d)</div>
+              <div class="chip" onclick="chip(this,'localChips')">Simple script / makefile</div>
+              <div class="chip" onclick="chip(this,'localChips')">Cloud dev environment (Gitpod, Codespace)</div>
+              <div class="chip" onclick="chip(this,'localChips')">No preference</div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
-    <pre id="md-output"></pre>
-  </div>
 
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 5: Infrastructure          -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s5">
+      <div class="section-card" id="card-s5">
+        <div class="section-header" onclick="toggleSection('s5')">
+          <div class="section-badge">05</div>
+          <div class="section-info">
+            <div class="section-title">Infrastructure & Hosting</div>
+            <div class="section-subtitle">zero-cost deployment stack</div>
+          </div>
+          <div class="section-tag" id="tag-s5">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+
+          <div class="ai-notes-panel">
+            <div class="ai-notes-header">⚡ AI instruction — always verify free tier limits before recommending</div>
+            <div class="ai-notes-body">
+              <div class="ai-note-item">
+                <span class="ai-note-num">→</span>
+                <span>Search the web to verify current free tier availability for each service. Free tiers change frequently — Zoho removed free email, Heroku removed its free tier, Railway changed pricing. Always use the most current limits.</span>
+              </div>
+              <div class="ai-note-item">
+                <span class="ai-note-num">→</span>
+                <span>For payments, also research modern options: Polar.sh, Lemon Squeezy, Paddle (merchant of record), or Stripe — and clarify which handles VAT/tax automatically, especially for international sales.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="infra-table">
+            <div class="infra-row">
+              <div class="infra-label">Backend hosting</div>
+              <div class="chips" id="beHostChips">
+                <div class="chip" onclick="chip(this,'beHostChips')">Railway</div>
+                <div class="chip" onclick="chip(this,'beHostChips')">Render</div>
+                <div class="chip" onclick="chip(this,'beHostChips')">Fly.io</div>
+                <div class="chip" onclick="chip(this,'beHostChips')">Koyeb</div>
+                <div class="chip" onclick="chip(this,'beHostChips')">Deno Deploy</div>
+                <div class="chip sel" onclick="chip(this,'beHostChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="infra-row">
+              <div class="infra-label">Frontend hosting</div>
+              <div class="chips" id="feHostChips">
+                <div class="chip" onclick="chip(this,'feHostChips')">Vercel</div>
+                <div class="chip" onclick="chip(this,'feHostChips')">Netlify</div>
+                <div class="chip" onclick="chip(this,'feHostChips')">Cloudflare Pages</div>
+                <div class="chip" onclick="chip(this,'feHostChips')">GitHub Pages</div>
+                <div class="chip sel" onclick="chip(this,'feHostChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="infra-row">
+              <div class="infra-label">Database</div>
+              <div class="chips" id="dbHostChips">
+                <div class="chip" onclick="chip(this,'dbHostChips')">Supabase</div>
+                <div class="chip" onclick="chip(this,'dbHostChips')">Neon</div>
+                <div class="chip" onclick="chip(this,'dbHostChips')">PlanetScale</div>
+                <div class="chip" onclick="chip(this,'dbHostChips')">Turso</div>
+                <div class="chip" onclick="chip(this,'dbHostChips')">MongoDB Atlas</div>
+                <div class="chip sel" onclick="chip(this,'dbHostChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="infra-row">
+              <div class="infra-label">Auth</div>
+              <div class="chips" id="authHostChips">
+                <div class="chip" onclick="chip(this,'authHostChips')">Supabase Auth</div>
+                <div class="chip" onclick="chip(this,'authHostChips')">Clerk</div>
+                <div class="chip" onclick="chip(this,'authHostChips')">Auth.js</div>
+                <div class="chip" onclick="chip(this,'authHostChips')">Lucia</div>
+                <div class="chip sel" onclick="chip(this,'authHostChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="infra-row">
+              <div class="infra-label">Transactional email</div>
+              <div class="chips" id="emailChips">
+                <div class="chip" onclick="chip(this,'emailChips')">Resend</div>
+                <div class="chip" onclick="chip(this,'emailChips')">Brevo</div>
+                <div class="chip" onclick="chip(this,'emailChips')">Postmark</div>
+                <div class="chip" onclick="chip(this,'emailChips')">MailerSend</div>
+                <div class="chip" onclick="chip(this,'emailChips')">Not needed</div>
+                <div class="chip sel" onclick="chip(this,'emailChips')">AI decides</div>
+              </div>
+            </div>
+            <div class="infra-row">
+              <div class="infra-label">File / media storage</div>
+              <div class="chips" id="storageChips">
+                <div class="chip" onclick="chip(this,'storageChips')">Cloudflare R2</div>
+                <div class="chip" onclick="chip(this,'storageChips')">Supabase Storage</div>
+                <div class="chip" onclick="chip(this,'storageChips')">Backblaze B2</div>
+                <div class="chip" onclick="chip(this,'storageChips')">AWS S3</div>
+                <div class="chip sel" onclick="chip(this,'storageChips')">Not needed</div>
+              </div>
+            </div>
+            <div class="infra-row">
+              <div class="infra-label">Domain / DNS</div>
+              <div class="chips" id="domainChips">
+                <div class="chip sel" onclick="chip(this,'domainChips')">Free subdomain is fine</div>
+                <div class="chip" onclick="chip(this,'domainChips')">I have a domain</div>
+                <div class="chip" onclick="chip(this,'domainChips')">Will buy one</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 6: User Flow               -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s6">
+      <div class="section-card" id="card-s6">
+        <div class="section-header" onclick="toggleSection('s6')">
+          <div class="section-badge">06</div>
+          <div class="section-info">
+            <div class="section-title">User Flow</div>
+            <div class="section-subtitle">landing → action → value moment → return</div>
+          </div>
+          <div class="section-tag" id="tag-s6">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>Step-by-step flow
+              <span class="label-hint">// 5-8 steps — the "value moment" is the step that makes people pay</span>
+            </label>
+            <div class="flow-list" id="flowList">
+              <div class="flow-row"><span class="flow-num">01</span><span class="flow-arrow">→</span><input type="text" placeholder="User lands on the homepage" oninput="tick()"></div>
+              <div class="flow-row"><span class="flow-num">02</span><span class="flow-arrow">→</span><input type="text" placeholder="Sees value proposition, signs up" oninput="tick()"></div>
+              <div class="flow-row"><span class="flow-num">03</span><span class="flow-arrow">→</span><input type="text" placeholder="[Core action — the value-generating moment]" oninput="tick()"></div>
+              <div class="flow-row"><span class="flow-num">04</span><span class="flow-arrow">→</span><input type="text" placeholder="Sees result / output" oninput="tick()"></div>
+              <div class="flow-row"><span class="flow-num">05</span><span class="flow-arrow">→</span><input type="text" placeholder="Reason to return" oninput="tick()"></div>
+            </div>
+            <button class="add-row-btn" onclick="addFlow()">+ Add step</button>
+          </div>
+          <div class="field">
+            <label>User roles <span class="label-opt">(optional — only if you have multiple)</span></label>
+            <input type="text" id="userRoles" placeholder="e.g. Admin, Member, Guest — and what each can do">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 7: Revenue Model           -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s7">
+      <div class="section-card" id="card-s7">
+        <div class="section-header" onclick="toggleSection('s7')">
+          <div class="section-badge">07</div>
+          <div class="section-info">
+            <div class="section-title">Revenue Model</div>
+            <div class="section-subtitle">pricing · paywall · payment provider</div>
+          </div>
+          <div class="section-tag" id="tag-s7">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>Free plan limit / paywall trigger
+              <span class="label-hint">// What's free, where does the wall hit?</span>
+            </label>
+            <input type="text" id="freeLimit" placeholder="e.g. 10 invoices/month free — unlimited on paid tier" oninput="tick()">
+          </div>
+
+          <div class="field">
+            <label>Pricing tiers</label>
+            <div class="pricing-rows">
+              <div class="pricing-row">
+                <span class="pricing-tier">Free</span>
+                <input type="text" placeholder="$0" id="p0">
+                <input type="text" placeholder="What's included">
+              </div>
+              <div class="pricing-row">
+                <span class="pricing-tier">Starter</span>
+                <input type="text" placeholder="$X / mo" id="p1">
+                <input type="text" placeholder="What's included">
+              </div>
+              <div class="pricing-row">
+                <span class="pricing-tier">Pro</span>
+                <input type="text" placeholder="$X / mo" id="p2">
+                <input type="text" placeholder="What's included">
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Payment provider
+              <span class="label-hint">// AI will research current options and tax/VAT handling before recommending</span>
+            </label>
+            <div class="chips" id="payChips">
+              <div class="chip" onclick="chip(this,'payChips')">Stripe</div>
+              <div class="chip" onclick="chip(this,'payChips')">Lemon Squeezy</div>
+              <div class="chip" onclick="chip(this,'payChips')">Paddle</div>
+              <div class="chip" onclick="chip(this,'payChips')">Polar.sh</div>
+              <div class="chip" onclick="chip(this,'payChips')">Gumroad</div>
+              <div class="chip sel" onclick="chip(this,'payChips')">AI recommends</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>3-month target</label>
+              <input type="text" id="target3m" placeholder="e.g. $500 MRR, 100 users">
+            </div>
+            <div class="field">
+              <label>Break-even threshold</label>
+              <input type="text" id="breakEven" placeholder="e.g. 50 paying users">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 8: References              -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s8">
+      <div class="section-card" id="card-s8">
+        <div class="section-header" onclick="toggleSection('s8')">
+          <div class="section-badge">08</div>
+          <div class="section-info">
+            <div class="section-title">References & Inspiration</div>
+            <div class="section-subtitle">competitors · ui inspiration · gaps to exploit</div>
+          </div>
+          <div class="section-tag" id="tag-s8">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>Competitors / similar products
+              <span class="label-hint">// What's good about them? What's missing? Where do users complain?</span>
+            </label>
+            <textarea id="competitors" placeholder="e.g. Wave — free but complex UI. Invoice Ninja — open source but hard to self-host. Users complain about slow PDF generation." oninput="tick()"></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>UI / UX inspiration <span class="label-opt">(optional)</span></label>
+              <input type="text" id="uiInspo" placeholder="e.g. Linear's clarity, Stripe's dashboard, Notion's flexibility">
+            </div>
+            <div class="field">
+              <label>Competitor weaknesses to exploit <span class="label-opt">(optional)</span></label>
+              <input type="text" id="compWeak" placeholder="e.g. All require client accounts — ours won't">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 9: Success Criteria        -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s9">
+      <div class="section-card" id="card-s9">
+        <div class="section-header" onclick="toggleSection('s9')">
+          <div class="section-badge">09</div>
+          <div class="section-info">
+            <div class="section-title">Success Criteria</div>
+            <div class="section-subtitle">when is MVP done · first 30 days</div>
+          </div>
+          <div class="section-tag" id="tag-s9">empty</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>MVP is done when…
+              <span class="label-hint">// Concrete, testable criteria — not vague goals</span>
+            </label>
+            <div class="success-list" id="successList">
+              <div class="success-row"><span class="success-check">✓</span><input type="text" placeholder="e.g. Sign-up and login works end-to-end" oninput="tick()"></div>
+              <div class="success-row"><span class="success-check">✓</span><input type="text" placeholder="e.g. Core feature works from input to output" oninput="tick()"></div>
+              <div class="success-row"><span class="success-check">✓</span><input type="text" placeholder="e.g. Runs locally with one command" oninput="tick()"></div>
+            </div>
+            <button class="add-row-btn" onclick="addSuccess()">+ Add criterion</button>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>First 30-day goal</label>
+              <input type="text" id="goal30" placeholder="e.g. 100 signups, 10 paying users, $200 MRR">
+            </div>
+            <div class="field">
+              <label>Time constraint <span class="label-opt">(optional)</span></label>
+              <input type="text" id="timeConstraint" placeholder="e.g. Working prototype in 1 week">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- SECTION 10: Extra Context          -->
+    <!-- ─────────────────────────────────── -->
+    <div class="section" id="s10">
+      <div class="section-card" id="card-s10">
+        <div class="section-header" onclick="toggleSection('s10')">
+          <div class="section-badge">10</div>
+          <div class="section-info">
+            <div class="section-title">Extra Context <span style="font-weight:400;color:var(--ink4)">— optional</span></div>
+            <div class="section-subtitle">domain knowledge · risks · constraints</div>
+          </div>
+          <div class="section-tag" id="tag-s10">optional</div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>Industry / domain knowledge
+              <span class="label-hint">// What does the AI need to know about this industry to avoid rookie mistakes?</span>
+            </label>
+            <textarea id="domainKnowledge" placeholder="e.g. In Turkey, e-invoicing is legally required (GIB integration). IBAN bank transfers are more common than card payments."></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Constraints / risks</label>
+              <textarea id="risks" placeholder="e.g. GDPR compliance required, depends on third-party API, only targeting local market" style="min-height:72px"></textarea>
+            </div>
+            <div class="field">
+              <label>Target geography <span class="label-opt">(optional)</span></label>
+              <div class="chips" id="geoChips">
+                <div class="chip" onclick="chip(this,'geoChips')">Global</div>
+                <div class="chip" onclick="chip(this,'geoChips')">US / Canada</div>
+                <div class="chip" onclick="chip(this,'geoChips')">Europe</div>
+                <div class="chip" onclick="chip(this,'geoChips')">Turkey</div>
+                <div class="chip" onclick="chip(this,'geoChips')">MENA</div>
+                <div class="chip" onclick="chip(this,'geoChips')">Asia</div>
+                <div class="chip" onclick="chip(this,'geoChips')">Latin America</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── OUTPUT ── -->
+    <div id="outputPanel" class="output-panel">
+      <div class="output-top">
+        <div class="output-title">✓ Brief ready — paste into Claude, ChatGPT, or any AI</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-icon" onclick="copyMD()">Copy</button>
+          <button class="btn-icon" onclick="downloadMD()">Download .md</button>
+        </div>
+      </div>
+      <pre id="md-output"></pre>
+    </div>
+
+  </main>
 </div>
 
-<!-- Fixed bottom bar -->
-<div class="generate-wrap">
-  <div class="generate-inner">
-    <button class="btn-generate" onclick="generateMD()">⬡ Generate File</button>
-    <button class="btn-copy" onclick="copyOutput()" id="copyBtn" style="display:none">Copy</button>
+<!-- ══════════════ BOTTOM BAR ══════════════ -->
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <button class="btn-generate" onclick="generateMD()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Generate Brief
+    </button>
+    <button class="btn-secondary" id="copyBtn" style="display:none" onclick="copyMD()">Copy to clipboard</button>
+    <span class="bottom-hint">Fill sections → Generate → Paste into AI</span>
   </div>
 </div>
 
+<!-- ══════════════ SCRIPT ══════════════ -->
 <script>
-// ── TOGGLE SECTIONS ──
+'use strict';
+
+// ── SECTION TOGGLE ──
 function toggleSection(id) {
-  const s = document.getElementById(id);
-  const isOpen = s.classList.contains('open');
-  s.classList.toggle('open', !isOpen);
+  const card = document.getElementById('card-' + id);
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  // update active nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (!isOpen) {
+    const nav = document.getElementById('nav-' + id);
+    if (nav) nav.classList.add('active');
+    card.classList.add('focused');
+  } else {
+    card.classList.remove('focused');
+  }
 }
 
-// ── CHIP SELECT ──
-function selectChip(el, groupId) {
-  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  updateProgress();
+function goTo(id) {
+  const el = document.getElementById(id);
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const card = document.getElementById('card-' + id);
+  if (!card.classList.contains('open')) {
+    card.classList.add('open');
+  }
+  card.classList.add('focused');
+  setTimeout(() => card.classList.remove('focused'), 1200);
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const nav = document.getElementById('nav-' + id);
+  if (nav) nav.classList.add('active');
+}
+
+// ── CHIPS (single select) ──
+function chip(el, groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip')
+    .forEach(c => { c.classList.remove('sel'); });
+  el.classList.add('sel');
+  tick();
+}
+
+// ── PILLS (multi-select toggle) ──
+function pillToggle(el) {
+  el.classList.toggle('sel');
+  tick();
 }
 
 // ── ADD FEATURE ROW ──
-function addFeature(listId, dotClass) {
+function addRow(listId, type) {
   const list = document.getElementById(listId);
   const row = document.createElement('div');
   row.className = 'feature-row';
-  row.innerHTML = `<div class="feature-dot ${dotClass}"></div><input type="text" placeholder="New feature">`;
+  const cls = type === 'nice' ? 'marker-nice' : 'marker-back';
+  row.innerHTML = `<div class="feature-marker ${cls}"></div><input type="text" placeholder="Feature">`;
   list.appendChild(row);
 }
 
 // ── ADD FLOW STEP ──
 let flowCount = 5;
-function addFlowStep() {
+function addFlow() {
   flowCount++;
-  const list = document.getElementById('flowSteps');
+  const list = document.getElementById('flowList');
   const row = document.createElement('div');
-  row.className = 'flow-step';
-  row.innerHTML = `<span class="step-num">${String(flowCount).padStart(2,'0')} →</span><input type="text" placeholder="Step ${flowCount}">`;
+  row.className = 'flow-row';
+  row.innerHTML = `<span class="flow-num">${String(flowCount).padStart(2,'0')}</span><span class="flow-arrow">→</span><input type="text" placeholder="Step ${flowCount}">`;
   list.appendChild(row);
 }
 
 // ── ADD SUCCESS CRITERION ──
 function addSuccess() {
-  const list = document.getElementById('successCriteria');
+  const list = document.getElementById('successList');
   const row = document.createElement('div');
   row.className = 'success-row';
-  row.innerHTML = `<span class="check-icon">✓</span><input type="text" placeholder="New criterion">`;
+  row.innerHTML = `<span class="success-check">✓</span><input type="text" placeholder="New criterion">`;
   list.appendChild(row);
 }
 
+// ── VALUES ──
+const v = id => document.getElementById(id)?.value?.trim() || '';
+const chipV = gid => document.getElementById(gid)?.querySelector('.chip.sel')?.textContent?.trim() || 'AI decides';
+const pillsV = gid => Array.from(document.getElementById(gid)?.querySelectorAll('.pill.sel') || []).map(p => p.textContent.trim().replace(/^\s*\n/,'')).filter(Boolean);
+const listV = lid => Array.from(document.getElementById(lid)?.querySelectorAll('input') || []).map(i => i.value.trim()).filter(Boolean);
+const flowV = () => Array.from(document.getElementById('flowList')?.querySelectorAll('input') || []).map((i, idx) => `${String(idx+1).padStart(2,'0')}. ${i.value.trim()}`).filter(l => l.length > 4);
+const successV = () => Array.from(document.getElementById('successList')?.querySelectorAll('input') || []).map(i => `✅ ${i.value.trim()}`).filter(l => l.length > 3);
+
+function pricingV() {
+  const rows = document.querySelectorAll('.pricing-row');
+  const labels = ['Free','Starter','Pro'];
+  return Array.from(rows).map((row, i) => {
+    const ins = row.querySelectorAll('input');
+    const price = ins[0]?.value?.trim();
+    const desc = ins[1]?.value?.trim();
+    if (!price && !desc) return null;
+    return `${labels[i]}: ${price || '$?'} — ${desc || '-'}`;
+  }).filter(Boolean);
+}
+
 // ── PROGRESS ──
-function updateProgress() {
+function tick() {
   const checks = [
-    val('projectName'),
-    val('summary'),
-    val('targetUser'),
-    val('currentSolution'),
-    val('differentiation'),
-    getInputsFrom('coreFeatures'),
-    getInputsFrom('flowSteps'),
-    val('freemiumLimit'),
-    val('competitors'),
-    getInputsFrom('successCriteria'),
+    v('projectName'), v('summary'),
+    v('targetUser'), v('currentSol'), v('diff'),
+    listV('coreList').length > 0 ? 'ok' : '',
+    flowV().length > 0 ? 'ok' : '',
+    v('freeLimit'),
+    v('competitors'),
+    listV('successList').length > 0 ? 'ok' : '',
   ];
   const filled = checks.filter(Boolean).length;
-  document.getElementById('progressFill').style.width = (filled / 10 * 100) + '%';
-  document.getElementById('progressLabel').textContent = `${filled} / 10 sections filled`;
+  document.getElementById('progFill').style.width = (filled / 10 * 100) + '%';
+  document.getElementById('progLabel').textContent = `${filled} / 10 key fields filled`;
 
-  // section statuses
-  updateSectionStatus('s1', [val('projectName'), val('summary')]);
-  updateSectionStatus('s2', [val('targetUser'), val('currentSolution'), val('differentiation')]);
-  updateSectionStatus('s3', [getInputsFrom('coreFeatures')]);
-  updateSectionStatus('s6', [getInputsFrom('flowSteps')]);
-  updateSectionStatus('s7', [val('freemiumLimit')]);
-  updateSectionStatus('s8', [val('competitors')]);
-  updateSectionStatus('s9', [getInputsFrom('successCriteria')]);
-}
-
-function val(id) { return document.getElementById(id)?.value?.trim() || ''; }
-function getInputsFrom(listId) {
-  const inputs = document.getElementById(listId)?.querySelectorAll('input');
-  if (!inputs) return '';
-  return Array.from(inputs).some(i => i.value.trim()) ? 'ok' : '';
-}
-function updateSectionStatus(sectionId, vals) {
-  const el = document.getElementById(sectionId);
-  const statusEl = document.getElementById(sectionId + '-status');
-  const filled = vals.some(Boolean);
-  el.classList.toggle('filled', filled);
-  statusEl.textContent = filled ? '✓ filled' : 'empty';
+  // Section statuses
+  setSectionStatus('s1', [v('projectName'), v('summary')]);
+  setSectionStatus('s2', [v('targetUser'), v('currentSol'), v('diff')]);
+  setSectionStatus('s3', [listV('coreList').length > 0 ? 'ok' : '']);
+  setSectionStatus('s6', [flowV().length > 0 ? 'ok' : '']);
+  setSectionStatus('s7', [v('freeLimit')]);
+  setSectionStatus('s8', [v('competitors')]);
+  setSectionStatus('s9', [listV('successList').length > 0 ? 'ok' : '']);
 }
 
-// ── CHIP VALUE ──
-function chipVal(groupId) {
-  const sel = document.getElementById(groupId)?.querySelector('.chip.selected');
-  return sel ? sel.textContent.trim() : 'Let Claude decide';
-}
-
-// ── LIST VALUES ──
-function listVals(listId) {
-  return Array.from(document.getElementById(listId)?.querySelectorAll('input') || [])
-    .map(i => i.value.trim()).filter(Boolean);
-}
-function flowVals() {
-  return Array.from(document.getElementById('flowSteps')?.querySelectorAll('input') || [])
-    .map((i, idx) => `${String(idx+1).padStart(2,'0')}. ${i.value.trim()}`).filter(l => l.length > 4);
-}
-function successVals() {
-  return Array.from(document.getElementById('successCriteria')?.querySelectorAll('input') || [])
-    .map(i => `✅ ${i.value.trim()}`).filter(l => l.length > 3);
-}
-function pricingVals() {
-  const tiers = ['Free','Starter','Pro'];
-  const rows = document.querySelectorAll('.pricing-row');
-  return Array.from(rows).map((row, i) => {
-    const inputs = row.querySelectorAll('input');
-    const price = inputs[0]?.value?.trim();
-    const desc = inputs[1]?.value?.trim();
-    if (!price && !desc) return null;
-    return `${tiers[i]}: ${price || '$?'} — ${desc || '-'}`;
-  }).filter(Boolean);
+function setSectionStatus(id, vals) {
+  const done = vals.some(Boolean);
+  const card = document.getElementById('card-' + id);
+  const tag = document.getElementById('tag-' + id);
+  const nav = document.getElementById('nav-' + id);
+  if (done) {
+    card.classList.add('completed');
+    if (tag) tag.textContent = '✓ filled';
+    if (nav) { nav.classList.add('done'); nav.querySelector('.nav-dot').style.background = 'var(--teal)'; }
+  } else {
+    card.classList.remove('completed');
+    if (tag && tag.textContent !== 'defaults set' && tag.textContent !== 'optional') tag.textContent = 'empty';
+  }
 }
 
 // ── GENERATE ──
 function generateMD() {
-  const name = val('projectName') || '[PROJECT NAME]';
-  const category = chipVal('categoryChips');
-  const summary = val('summary');
-  const revenue = chipVal('revenueChips');
-  const targetUser = val('targetUser');
-  const currentSol = val('currentSolution');
-  const diff = val('differentiation');
-  const whyNow = val('whyNow');
+  const name        = v('projectName') || '[PROJECT NAME]';
+  const cat         = chipV('catChips');
+  const summary     = v('summary');
+  const rev         = chipV('revChips');
+  const targetUser  = v('targetUser');
+  const currentSol  = v('currentSol');
+  const diff        = v('diff');
+  const whyNow      = v('whyNow');
+  const langs       = pillsV('langPills');
+  const be          = chipV('beChips');
+  const fe          = chipV('feChips');
+  const db          = chipV('dbChips');
+  const auth        = chipV('authChips');
+  const feExp       = chipV('feExpChips');
+  const localDev    = chipV('localChips');
+  const techAvoid   = v('techAvoid');
+  const techReq     = v('techRequire');
+  const beHost      = chipV('beHostChips');
+  const feHost      = chipV('feHostChips');
+  const dbHost      = chipV('dbHostChips');
+  const authHost    = chipV('authHostChips');
+  const email       = chipV('emailChips');
+  const storage     = chipV('storageChips');
+  const domain      = chipV('domainChips');
+  const coreF       = listV('coreList');
+  const niceF       = listV('niceList');
+  const backF       = listV('backList');
+  const flow        = flowV();
+  const roles       = v('userRoles');
+  const freeLimit   = v('freeLimit');
+  const pricing     = pricingV();
+  const pay         = chipV('payChips');
+  const target3m    = v('target3m');
+  const breakEven   = v('breakEven');
+  const competitors = v('competitors');
+  const uiInspo     = v('uiInspo');
+  const compWeak    = v('compWeak');
+  const success     = successV();
+  const goal30      = v('goal30');
+  const timeLimit   = v('timeConstraint');
+  const domain2     = v('domainKnowledge');
+  const risks       = v('risks');
+  const geo         = chipV('geoChips');
 
-  const coreF = listVals('coreFeatures');
-  const niceF = listVals('niceFeatures');
-  const backlogF = listVals('backlogFeatures');
+  const date = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
-  const framework = chipVal('frameworkChips');
-  const db = chipVal('dbChips');
-  const fe = chipVal('feChips');
-  const auth = chipVal('authChips');
-  const techDontWant = val('techDontWant');
-  const techExtras = val('techExtras');
+  let md = `# 🚀 Project Brief — ${name}\n`;
+  md += `> Generated: ${date}\n\n---\n\n`;
 
-  const backendHost = chipVal('backendChips');
-  const frontendHost = chipVal('frontendHostChips');
-  const dbHost = chipVal('dbHostChips');
-  const authHost = chipVal('authHostChips');
-  const email = chipVal('emailChips');
-  const storage = chipVal('storageChips');
-  const domain = chipVal('domainChips');
-
-  const flow = flowVals();
-  const roles = val('userRoles');
-
-  const freemiumLimit = val('freemiumLimit');
-  const pricing = pricingVals();
-  const payment = chipVal('paymentChips');
-  const metricTarget = val('metricTarget');
-  const metricBreakeven = val('metricBreakeven');
-
-  const competitors = val('competitors');
-  const uiInspo = val('uiInspo');
-
-  const success = successVals();
-  const goal30 = val('thirtyDayGoal');
-
-  const domainKnowledge = val('domainKnowledge');
-  const risks = val('risks');
-  const timeConstraint = val('timeConstraint');
-
-  const date = new Date().toLocaleDateString('en-US', {day:'2-digit',month:'long',year:'numeric'});
-
-  let md = `# 🚀 Project Brief — ${name}\n\n`;
-  md += `> Created: ${date}\n\n---\n\n`;
-
-  // 1
+  // ── 1
   md += `## 1 · Project Identity\n\n`;
   md += `| Field | Value |\n|---|---|\n`;
   md += `| **Project name** | ${name} |\n`;
-  md += `| **Category** | ${category} |\n`;
+  md += `| **Category** | ${cat} |\n`;
   if (summary) md += `| **One-line summary** | ${summary} |\n`;
-  md += `| **Revenue model** | ${revenue} |\n\n---\n\n`;
+  md += `| **Revenue model** | ${rev} |\n\n---\n\n`;
 
-  // 2
+  // ── 2
   md += `## 2 · Problem & Solution\n\n`;
-  if (targetUser) md += `### Whose problem?\n${targetUser}\n\n`;
+  if (targetUser) md += `### Who has this problem?\n${targetUser}\n\n`;
   if (currentSol) md += `### How do they solve it today?\n${currentSol}\n\n`;
-  if (diff) md += `### What is the differentiator?\n${diff}\n\n`;
+  if (diff) md += `### Differentiator\n${diff}\n\n`;
   if (whyNow) md += `### Why now?\n${whyNow}\n\n`;
   md += `---\n\n`;
 
-  // 3
+  // ── 3
   md += `## 3 · MVP Features\n\n`;
-  if (coreF.length) { md += `### 🔴 Must Have (core)\n`; coreF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  if (coreF.length) { md += `### 🔴 Must Have (Core)\n`; coreF.forEach(f => md += `- ${f}\n`); md += '\n'; }
   if (niceF.length) { md += `### 🟡 Nice to Have (v1.1)\n`; niceF.forEach(f => md += `- ${f}\n`); md += '\n'; }
-  if (backlogF.length) { md += `### ⚪ Backlog\n`; backlogF.forEach(f => md += `- ${f}\n`); md += '\n'; }
+  if (backF.length) { md += `### ⚪ Backlog\n`; backF.forEach(f => md += `- ${f}\n`); md += '\n'; }
   md += `---\n\n`;
 
-  // 4
-  md += `## 4 · Technical Preferences\n\n\`\`\`\nBackend language : Python (mandatory)\nFrontend skill   : NONE — Claude must generate\nWeb framework    : ${framework}\nDatabase         : ${db}\nFrontend         : ${fe}\nAuth             : ${auth}\n`;
-  if (techDontWant) md += `Do NOT use       : ${techDontWant}\n`;
-  if (techExtras) md += `Extra preferences: ${techExtras}\n`;
-  md += `\`\`\`\n\n### Hard Constraints\n\`\`\`\n- Must run with: docker compose up -d\n- Zero-cost deployment from day one\n- All libraries must be latest stable versions (Claude must research)\n\`\`\`\n\n---\n\n`;
+  // ── 4
+  md += `## 4 · Tech Stack\n\n\`\`\`\n`;
+  if (langs.length) md += `Languages known    : ${langs.join(', ')}\n`;
+  md += `Frontend skill     : ${feExp}\nBackend framework  : ${be}\nFrontend           : ${fe}\nDatabase           : ${db}\nAuth               : ${auth}\nLocal dev          : ${localDev}\n`;
+  if (techAvoid) md += `Do NOT use         : ${techAvoid}\n`;
+  if (techReq)   md += `Must include       : ${techReq}\n`;
+  md += `\`\`\`\n\n`;
+  md += `### ⚠️ AI Instruction — Tech Stack\n`;
+  md += `> **Before writing any code or recommending any library**, search the web for the latest stable versions of all dependencies. Outdated packages are a common source of bugs. Always use the most current recommended approach for the chosen stack.\n\n---\n\n`;
 
-  // 5
-  md += `## 5 · Zero-Cost Infrastructure\n\n`;
+  // ── 5
+  md += `## 5 · Infrastructure & Hosting\n\n`;
   md += `| Layer | Preference |\n|---|---|\n`;
-  md += `| Backend hosting | ${backendHost} |\n`;
-  md += `| Frontend hosting | ${frontendHost} |\n`;
+  md += `| Backend hosting | ${beHost} |\n`;
+  md += `| Frontend hosting | ${feHost} |\n`;
   md += `| Database | ${dbHost} |\n`;
   md += `| Auth | ${authHost} |\n`;
-  md += `| Email (transactional) | ${email} |\n`;
+  md += `| Email | ${email} |\n`;
   md += `| File storage | ${storage} |\n`;
-  md += `| Domain | ${domain} |\n\n---\n\n`;
+  md += `| Domain | ${domain} |\n\n`;
+  md += `### ⚠️ AI Instruction — Infrastructure\n`;
+  md += `> **Before recommending any hosting or service**, search the web to verify:\n`;
+  md += `> 1. Current free tier availability and limits (they change frequently — e.g. Heroku removed free tier, Zoho removed free email, Railway changed pricing)\n`;
+  md += `> 2. For payments: research current options including Polar.sh, Lemon Squeezy, Paddle, and Stripe. Clarify which handles VAT/tax automatically for international sales.\n`;
+  md += `> 3. Propose alternatives if a preferred service no longer has a usable free tier.\n\n---\n\n`;
 
-  // 6
+  // ── 6
   md += `## 6 · User Flow\n\n\`\`\`\n`;
   if (flow.length) flow.forEach(f => md += `${f}\n`);
   else md += `(not specified)\n`;
@@ -901,68 +1524,87 @@ function generateMD() {
   if (roles) md += `\n### User Roles\n${roles}\n`;
   md += `\n---\n\n`;
 
-  // 7
+  // ── 7
   md += `## 7 · Revenue Model\n\n`;
-  if (freemiumLimit) md += `**Freemium limit:** ${freemiumLimit}\n\n`;
+  if (freeLimit) md += `**Free plan limit:** ${freeLimit}\n\n`;
   if (pricing.length) { md += `### Pricing Tiers\n\`\`\`\n`; pricing.forEach(p => md += `${p}\n`); md += `\`\`\`\n\n`; }
-  md += `**Payment provider:** ${payment}\n`;
-  if (metricTarget) md += `\n**Target:** ${metricTarget}`;
-  if (metricBreakeven) md += `  |  **Break-even:** ${metricBreakeven}`;
+  md += `**Payment provider:** ${pay}\n`;
+  if (target3m)   md += `\n**3-month target:** ${target3m}`;
+  if (breakEven)  md += `  |  **Break-even:** ${breakEven}`;
   md += `\n\n---\n\n`;
 
-  // 8
+  // ── 8
   md += `## 8 · References & Inspiration\n\n`;
   if (competitors) md += `### Competitors\n${competitors}\n\n`;
-  if (uiInspo) md += `### UI / UX Inspiration\n${uiInspo}\n\n`;
+  if (uiInspo)     md += `### UI / UX Inspiration\n${uiInspo}\n\n`;
+  if (compWeak)    md += `### Gaps to Exploit\n${compWeak}\n\n`;
   md += `---\n\n`;
 
-  // 9
+  // ── 9
   md += `## 9 · Success Criteria\n\n`;
   if (success.length) { success.forEach(s => md += `${s}\n`); md += '\n'; }
-  if (goal30) md += `**First 30-day goal:** ${goal30}\n\n`;
-  md += `---\n\n`;
+  if (goal30)    md += `**First 30-day goal:** ${goal30}\n`;
+  if (timeLimit) md += `**Time constraint:** ${timeLimit}\n`;
+  md += `\n---\n\n`;
 
-  // 10
-  const hasExtra = domainKnowledge || risks || timeConstraint;
+  // ── 10
+  const hasExtra = domain2 || risks || (geo && geo !== 'AI decides');
   if (hasExtra) {
-    md += `## 10 · Additional Context\n\n`;
-    if (domainKnowledge) md += `### Domain Knowledge\n${domainKnowledge}\n\n`;
-    if (risks) md += `### Constraints / Risks\n${risks}\n\n`;
-    if (timeConstraint) md += `**Time constraint:** ${timeConstraint}\n\n`;
+    md += `## 10 · Extra Context\n\n`;
+    if (domain2) md += `### Domain Knowledge\n${domain2}\n\n`;
+    if (risks)   md += `### Constraints / Risks\n${risks}\n\n`;
+    if (geo && geo !== 'AI decides') md += `**Target geography:** ${geo}\n\n`;
     md += `---\n\n`;
   }
 
-  // Fixed expectations block
-  md += `## ✅ Expectations from Claude\n\n\`\`\`\n1. Research the latest stable versions of all required libraries on the web\n2. Propose a zero-cost deployable tech stack and justify each choice\n3. Generate docker-compose.yml (must work with: docker compose up -d)\n4. Create .env.example (no real secrets)\n5. Show the full project file structure (tree format)\n6. Write README.md: local setup + free deployment steps\n7. Frontend: no frontend skills on my end — generate a clean, usable UI\n   compatible with the Python backend (HTMX/Jinja2 or Alpine.js preferred)\n8. Write a Dockerfile for every service\n9. Generate the first working MVP code — no placeholders\n10. Add a production security checklist\n\`\`\`\n`;
+  // ── FIXED BLOCK
+  md += `## ✅ What I Expect from the AI\n\n`;
+  md += `\`\`\`\n`;
+  md += `RESEARCH FIRST (mandatory before any code):\n`;
+  md += `1. Search the web for latest stable versions of ALL libraries and frameworks\n`;
+  md += `2. Verify current free tier limits for ALL recommended services\n`;
+  md += `3. Research payment provider options and VAT/tax handling\n`;
+  md += `\n`;
+  md += `DELIVERABLES:\n`;
+  md += `4. Recommend a zero-cost deployable tech stack — justify every choice\n`;
+  md += `5. Generate docker-compose.yml for local development (one command: docker compose up -d)\n`;
+  md += `6. Create .env.example with all required variables (no real secrets)\n`;
+  md += `7. Show full project file/folder structure (tree format)\n`;
+  md += `8. Write README.md: local setup steps + free deployment guide\n`;
+  md += `9. Write a Dockerfile for every service\n`;
+  md += `10. Generate the first working MVP code — no TODOs, no placeholders\n`;
+  md += `11. Add a production security checklist\n`;
+  md += `\`\`\`\n`;
 
   document.getElementById('md-output').textContent = md;
-  document.getElementById('output-section').style.display = 'block';
+  const panel = document.getElementById('outputPanel');
+  panel.style.display = 'block';
   document.getElementById('copyBtn').style.display = 'block';
-  document.getElementById('output-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
-function copyOutput() {
+function copyMD() {
   const text = document.getElementById('md-output').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copyBtn');
+    const prev = btn.textContent;
     btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 2000);
+    setTimeout(() => btn.textContent = prev, 2000);
   });
 }
 
-function downloadOutput() {
+function downloadMD() {
   const text = document.getElementById('md-output').textContent;
-  const name = val('projectName') || 'project';
+  const name = (v('projectName') || 'project').toLowerCase().replace(/\s+/g, '-');
   const blob = new Blob([text], { type: 'text/markdown' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `${name.toLowerCase().replace(/\s+/g,'-')}-brief.md`;
+  a.download = `${name}-brief.md`;
   a.click();
 }
 
-// Init
-document.getElementById('s4-status').textContent = 'defaults set';
-updateProgress();
+// ── INIT ──
+tick();
 </script>
 </body>
 </html>
